@@ -1,0 +1,39 @@
+<head>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<div class="topnav">
+  <a class="active" href="#">Judging Panel</a>
+  <a href="judge/judge-logout">Logout</a>
+
+  <a href="#about">About</a>
+
+</div>
+<div class="space"></div>
+
+<form action="/judge/add-marks" method="POST">
+  <div class="container-judge">
+
+
+    <div class="judge-header">
+      <h1>Judges Panel</h1>
+    </div>
+    <hr>
+
+
+    <label><b>Chess Number</b></label>
+
+
+    <input type="text" placeholder="Enter Chess Number" name="chessno" id="chessno" required>
+
+    <label><b>Item</b></label>
+    <input type="text" placeholder="Enter Item"  name="item" id="item" required>
+
+    <br><label><b>Marks</b></label>
+    <input type="text" placeholder="Enter Marks" name="marks" id="marks" required>
+    <hr>
+
+    <button type="submit" onclick="return confirm('Do you want to submit ?')" class="registerbtn">Submit</button>
+  </div>
+
+
+</form>

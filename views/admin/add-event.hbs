@@ -1,0 +1,34 @@
+<head>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+
+<form action="add-event" method="POST" enctype="multipart/form-data">
+  <div class="container-judge">
+    
+    
+    <div class="judge-header">
+        <h1>Add Events</h1>
+    </div>
+    <hr>
+
+    <label ><b>Event Name</b></label>
+    <input type="text" placeholder="Enter Event Name" name="eventname" id="eventname" required>
+
+    <br><label ><b>Date</b></label>
+    <input type="text" placeholder="Enter Date" name="date" id="date" required>
+
+    <br><label ><b>Time</b></label>
+    <input type="text" placeholder="Enter Time" name="time" id="time" required>
+
+    <br><label ><b>Image</b></label>
+    <input type="file"  name="image" id="image" enctype="multipart/form-data" required>
+  
+    
+    
+    <hr>
+
+    <button type="submit" class="registerbtn">Submit</button>
+  </div>
+
+  
+</form> 

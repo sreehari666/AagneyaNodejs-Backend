@@ -1,0 +1,42 @@
+<head>
+<link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+{{#if event}}
+<form action="/admin/edit-event/{{event._id}}" method="POST" enctype="multipart/form-data">
+  <div class="container-judge">
+
+
+    <div class="judge-header">
+      <h1>Edit Events</h1>
+    </div>
+    <hr>
+    
+    <label><b>Event Name</b></label>
+    <input type="text" placeholder="Enter Event Name" value="{{event.eventname}}" name="eventname" id="eventname">
+
+    <label><b>Date</b></label>
+    <input type="text" placeholder="Enter Date" value="{{event.date}}" name="date" id="date">
+
+    <label><b>Time</b></label>
+    <input type="text" placeholder="Enter Time" value="{{event.time}}" name="time" id="time">
+
+    <br>
+    <img src="/event-images/{{event._id}}.jpg" alt="" style="width: 100px;height:auto" id="imgView">
+    <div class="space"></div>
+    <label><b>Image</b></label>
+    {{!-- <div class="space"></div> --}}
+    <input type="file" name="image"  id="image" class="form-control" onchange="viewImage(event)" class="pt-3">
+    {{!-- <input type="file" name="image" > --}}
+    {{/if}}
+    <hr>
+
+    <button type="submit" class="registerbtn">Submit</button>
+  </div>
+
+
+</form>
+<script>
+    function viewImage(event){
+        document.getElementById('imgView').src=URL.createObjectURL(event.target.files[0])
+    }
+</script>

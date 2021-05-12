@@ -1,0 +1,38 @@
+<head>
+<link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+
+{{#if data}}
+<form action="/admin/edit-gallery-photos/{{data._id}}" method="POST" enctype="multipart/form-data">
+  <div class="container-judge">
+
+
+    <div class="judge-header">
+      <h1>Edit Gallery</h1>
+    </div>
+    <hr>
+    
+    <label><b>Select Photo</b></label><br><br>
+        <img src="/gallery-images/{{data._id}}.jpg" alt="" style="width: 100px;height:auto" id="imgView_"><br><br>
+    <input type="file" name="image"  id="image" class="form-control" onchange="viewImage(event)" class="pt-3">
+
+    
+    <br>
+    <label><b>Write Description</b></label>
+    <input type="text"  name="description" id="description" value="{{data.description}}" enctype="multipart/form-data" required>
+    <br>
+    <hr>
+<br>
+    <button type="submit" class="registerbtn">Submit</button>
+  </div>
+
+
+</form>
+
+<script>
+    function viewImage(data){
+        document.getElementById('imgView_').src=URL.createObjectURL(data.target.files[0])
+    }
+</script>
+
+{{/if}}

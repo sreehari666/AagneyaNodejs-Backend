@@ -1,0 +1,70 @@
+<html>
+
+<body>
+
+    <head>
+        <style>
+            table {
+                font-family: arial, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+            }
+
+            td,
+            th {
+                border: 1px solid #dddddd;
+                text-align: left;
+                padding: 8px;
+            }
+
+            tr:nth-child(even) {
+                background-color: #dddddd;
+            }
+
+            .button {
+                border-radius: 30px;
+                color: white;
+                background: linear-gradient(to right, #ff105f, #ffad06);
+
+                padding: 15px 32px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+
+            .button-column {
+                float: right;
+            }
+        </style>
+    </head>
+    <h2>Edit or Delete Gallery Photos</h2><br>
+
+    <table>
+        <tr>
+
+            <th>Image</th>
+            <th>Description</th>
+            <th>Edit/Delete</th>
+        </tr>
+        {{#each data}}
+        <tr>
+
+            <td><img style="width:50px;height:50px" src="/gallery-images/{{this._id}}.jpg" alt="" </td>
+            <td>{{this.description}}</td>
+            <td>
+                <a href="/admin/edit-photo/{{this._id}}"><button class="button">Edit</button></a>
+                <br>
+                <a href="/admin/delete-photo/{{this._id}}"><button class="button"
+                        onclick="return confirm('Do you want to delete ')">Delete</button></a><br>
+            </td>
+        </tr>
+        {{/each}}
+
+        </tr>
+    </table>
+</body>
+
+</html>

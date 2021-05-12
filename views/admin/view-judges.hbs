@@ -1,0 +1,56 @@
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+.button {
+  border-radius: 30px;
+  color: white;
+  background: linear-gradient(to right,#ff105f,#ffad06);
+
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+</style>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Password</th>
+    
+    
+    
+  </tr>
+  {{#each response}}
+  <tr>
+    <td>{{this.name}}</td>
+    <td>{{this.email}}</td>
+    <td>{{this.REpassword}}</td>
+    
+    
+{{/each}}
+    
+    
+  </tr>
+  
+  
+  </tr>
+</table>

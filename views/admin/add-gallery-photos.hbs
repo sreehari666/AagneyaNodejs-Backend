@@ -1,0 +1,25 @@
+<head>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<form action="add-gallery-photos" method="POST" enctype="multipart/form-data">
+  <div class="container-judge">
+
+
+    <div class="judge-header">
+      <h1>Add Photos to Gallery</h1>
+    </div>
+    <hr>
+    
+    <label><b>Select Photo</b></label>
+    <input type="file"  name="image" id="image" enctype="multipart/form-data" required>
+    <br>
+    <label><b>Write Description</b></label>
+    <input type="text"  name="description" id="description" enctype="multipart/form-data" required>
+    <br>
+    <hr>
+<br>
+    <button type="submit" class="registerbtn">Submit</button>
+  </div>
+
+
+</form>

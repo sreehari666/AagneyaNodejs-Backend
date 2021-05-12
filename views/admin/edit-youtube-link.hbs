@@ -1,0 +1,25 @@
+<head>
+<link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+
+{{#if data}}
+<form action="/admin/edit-links/{{data._id}}" method="POST" enctype="multipart/form-data">
+  <div class="container-judge">
+
+
+    <div class="judge-header">
+      <h1>Edit Youtube Links</h1>
+    </div>
+    <hr>
+    
+    <label><b>Youtube Link</b></label>
+    <input type="text" placeholder="Enter Youtube Link" value="{{data.ytlink}}" name="ytlink" id="ytlink">
+
+   
+    <hr>
+
+    <button type="submit" class="registerbtn">Submit</button>
+  </div>
+{{/if}}
+
+</form>

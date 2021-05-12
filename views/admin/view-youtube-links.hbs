@@ -1,0 +1,58 @@
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+.button {
+  border-radius: 30px;
+  color: white;
+  background: linear-gradient(to right,#ff105f,#ffad06);
+
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+</style>
+
+<table>
+  <tr>
+    <th>Youtube Link</th>
+    <th>Edit</th>
+    <th>Delete</th>
+    
+    
+  </tr>
+  {{#each data}}
+  <tr>
+    <td>{{this.ytlink}}</td>
+    <td><a href="edit-link/{{this._id}}">
+    <button class="button" >Edit</button><br><br>
+    </a></td>
+    <td><a href="delete-link/{{this._id}}" onclick="return confirm('Do you want to delete {{this.ytlink}}')">
+    
+    <button class="button" >Delete</button><br><br>
+    </a></td>
+{{/each}}
+    
+    
+  </tr>
+  
+  
+  </tr>
+</table>

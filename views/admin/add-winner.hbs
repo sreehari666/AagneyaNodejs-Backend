@@ -1,0 +1,57 @@
+<head>
+<link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<form action="add-winner" method="POST" enctype="multipart/form-data">
+  <div class="container-judge">
+    
+    
+    <div class="judge-header">
+        <h1>Add Winners</h1>
+    </div>
+    <hr>
+
+    <label ><b>Name</b></label>
+    <input type="text" placeholder="Enter Name" name="name" id="name" required>
+
+    <br><label ><b>Department</b></label>
+    <div class="dropdown" >
+        <select name="department" style="width: 30rem; height:5rem " id="department" required>
+            <option value="choose" style="display: none;">Choose</option> 
+            <option value="cse">CSE</option>
+            <option value="ece">ECE</option>
+            <option value="mech">MECH</option>
+            <option value="civil">CIVIL</option>
+            <option value="eee">EEE</option>
+        </select>
+    </div>
+
+    <br><label ><b>Semester</b></label>
+    <div class="dropdown" >
+        <select name="semester" style="width: 30rem; height:5rem " id="semester" required>
+            <option value="choose" style="display: none;">Choose</option> 
+            <option value="s1">S1</option>
+            <option value="s2">S2</option>
+            <option value="s3">S3</option>
+            <option value="s4">S4</option>
+            <option value="s5">S5</option>
+            <option value="s6">S6</option>
+            <option value="s7">S7</option>
+            <option value="s8">S8</option>
+        </select>
+    </div>
+
+    <br><label ><b>Description</b></label>
+    <input type="text" placeholder="Enter Description" name="description" id="description" required>
+
+    <br><label ><b>Image</b></label>
+    <input type="file"  name="image" id="image" enctype="multipart/form-data" required>
+  
+    
+    
+    <hr>
+
+    <button type="submit" class="registerbtn">Submit</button>
+  </div>
+
+  
+</form> 

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>judges signup</title>
+	<link rel="stylesheet" href="stylesheets/style.css">
+</head>
+
+<body>
+	<div class="topnav">
+		<a class="active" href="/">Admin Panel</a>
+		<a href="admin/view-registered-students">View registered students</a>
+		<a href="/admin/view-judges">View registered judges</a>
+		
+		<a href="#about">About</a>
+
+	</div>
+	<div class="space"></div>
+	<center>
+		<div class="hero">
+
+
+
+
+			<form id="login" class="input-group" action="/admin/judge-signup" method="post">
+				<input type="text" name="name" class="input-field" placeholder="Name" required>
+				<input type="text" name="email" class="input-field" placeholder="E mail" required>
+				<input type="password" name="password" class="input-field" placeholder="Enter Password" required>
+				<input type="password" name="REpassword" class="input-field" placeholder=" Re Enter Password" required>
+				<div style="padding-bottom: 15px;">
+					<p>View Judges <a href="/admin/view-judges">view judges</a></p>
+				</div>
+
+
+				<button type="submit" class="submit-btn">Sign up</button>
+			</form>
+
+
+
+		</div>
+	</center>
+
+</body>
+
+</html>
