@@ -81,7 +81,7 @@ router.get('/view-winners',function (req,res) {
   })
   
 })
-router.get('/add-event',verifyLogin,function(req,res){
+router.get('/add-event',function(req,res){
 
   res.render('admin/add-event')
 });
@@ -128,7 +128,7 @@ router.get('/edit-event/:id',async function(req,res){
 
 
 
-router.post('/edit-event/:id',verifyLogin,function(req,res){
+router.post('/edit-event/:id',function(req,res){
   console.log(req.body)
   console.log(req.files.image)
   let id=req.params.id
@@ -150,7 +150,7 @@ router.get('/edit-item/:id',verifyLogin,function(req,res){
 })
 
 
-router.post('/edit-item/:id',verifyLogin,function(req,res){
+router.post('/edit-item/:id',function(req,res){
   console.log(" bodyyyy")
  console.log(req.body)
   console.log(req.params.id)
@@ -162,7 +162,7 @@ router.post('/edit-item/:id',verifyLogin,function(req,res){
 
 })
 
-router.get('/delete-item/:id',verifyLogin,function(req,res){
+router.get('/delete-item/:id',function(req,res){
   console.log(req.params.id)
   eventFunctions.deleteItem(req.params.id).then((data)=>{
     eventFunctions.getAllItems().then((data)=>{
@@ -172,7 +172,7 @@ router.get('/delete-item/:id',verifyLogin,function(req,res){
   })
 })
 
-router.post('/add-event',verifyLogin,function(req,res){
+router.post('/add-event',function(req,res){
   console.log(req.body)
   console.log(req.files.image)
   eventFunctions.addEvent(req.body,(id)=>{
@@ -189,7 +189,7 @@ router.post('/add-event',verifyLogin,function(req,res){
   })
 });
 
-router.post('/add-item',verifyLogin,function(req,res){
+router.post('/add-item',function(req,res){
 
   console.log(req.body)
 
@@ -199,10 +199,10 @@ router.post('/add-item',verifyLogin,function(req,res){
   })
 
 })
-router.get('/add-item',verifyLogin,function(req,res){
+router.get('/add-item',function(req,res){
   res.render('admin/add-item')
 })
-router.get('/get-items',verifyLogin,(req,res)=>{
+router.get('/get-items',(req,res)=>{
   eventFunctions.getAllItems().then((data)=>{
     console.log(data)
     res.render('admin/view-items',{data})
@@ -322,14 +322,14 @@ router.get('/delete-photo/:id',function(req,res){
   
 })
 
-router.get('/delete-event/:id',verifyLogin,function(req,res){
+router.get('/delete-event/:id',function(req,res){
   console.log(req.params.id)
   eventFunctions.deleteEvent(req.params.id).then(()=>{
     res.redirect('/admin')
   })
   
 })
-router.get('/view-registered-students',verifyLogin,function(req,res){
+router.get('/view-registered-students',function(req,res){
   eventFunctions.getAllRegisteredDetails().then((registerDetails)=>{
     res.render('admin/view-registered-students',{registerDetails})
   })
@@ -338,7 +338,7 @@ router.get('/view-registered-students',verifyLogin,function(req,res){
 router.get('/judge-signup', function (req, res) {
   res.render('admin/judge-signup')
 })
-router.post('/judge-signup',verifyLogin, function (req, res) {
+router.post('/judge-signup',function (req, res) {
   console.log('post is working  ! ')
   console.log(req.body)
   judgeFunctions.doSignup(req.body).then((response) => {
@@ -347,7 +347,7 @@ router.post('/judge-signup',verifyLogin, function (req, res) {
     console.log(response)
   })
 })
-router.get('/view-judges',verifyLogin, function (req, res) {
+router.get('/view-judges', function (req, res) {
   judgeFunctions.getJudges().then((response)=>{
     console.log(response)
     res.render('admin/view-judges',{response})

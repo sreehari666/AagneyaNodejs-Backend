@@ -14,8 +14,11 @@ const verifyLoginJudge = (req, res, next) => {
 
 /* GET home page. */
 router.get('/',verifyLoginJudge, function(req, res, next) {
+  eventFunctions.getAllItems().then((response)=>{
+    console.log(response)
+    res.render('judge/judge',{response});
+  })
   
-  res.render('judge/judge');
 });
 
 router.get('/judge-login', function (req, res) {

@@ -26,7 +26,14 @@
     <input type="text" placeholder="Enter Chess Number" name="chessno" id="chessno" required>
 
     <label><b>Item</b></label>
-    <input type="text" placeholder="Enter Item"  name="item" id="item" required>
+    
+    <select name="item" id="item" style="width: 30%;" required>
+      {{#each response}}
+      <option value="{{this.itemname}}">{{this.itemname}}</option>
+      {{/each}}
+    </select>
+    
+    {{!-- <input type="text" placeholder="Enter Item"  name="item" id="item" required> --}}
 
     <br><label><b>Marks</b></label>
     <input type="text" placeholder="Enter Marks" name="marks" id="marks" required>
