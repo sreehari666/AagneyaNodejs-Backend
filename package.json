@@ -17,6 +17,7 @@
     "express": "^4.16.4",
     "express-fileupload": "^1.2.1",
     "express-session": "^1.17.1",
+    "generate-unique-id": "^2.0.1",
     "hbs": "^4.1.1",
     "http-errors": "~1.6.3",
     "jquery": "^3.5.1",

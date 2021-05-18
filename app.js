@@ -29,9 +29,16 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 db.connect((err)=>{
-  if(err) console.log("connection error"+err);
-  else console.log("Database connected");
+  if(err) {
+  console.log("connection error"+err);
+  }
+  else {
+    console.log("Database connected");
+    
+  }
+
 })
+//db.loadScript()
 app.use(fileUpload())
 app.use('/',session({
   name:'homeCookie',

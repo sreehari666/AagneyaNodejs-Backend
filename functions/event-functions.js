@@ -4,6 +4,10 @@ var db = require('../config/connection')
 var collection = require('../config/collection');
 const { ObjectId } = require('mongodb');
 const session = require('express-session');
+const generateUniqueId = require('generate-unique-id');
+ 
+
+
 module.exports = {
     doLogin: (userData) => {
         console.log(userData)
@@ -189,13 +193,18 @@ module.exports = {
         console.log(registration_details);
 
         return new Promise(async (resolve, reject) => {
+             
             
             
-            db.get().collection('registered').insertOne(registration_details).then((data) => {
-                
-                resolve(data.ops[0]._id)
 
-            })
+                db.get().collection('registered').insertOne(registration_details).then((data) => {
+                
+                  resolve(data.ops[0]._id)
+    
+                 })
+         
+
+            
 
 
         })
@@ -285,8 +294,33 @@ module.exports = {
             })
         })
     },
+    findLast:()=>{
+        
+        return new Promise(async (resolve, reject) => {
+
+            db.get().collection('registered').find().sort({$natural:-1}).limit(1).next().then((res)=>{
+                console.log('the last one!')
+                console.log(res)
+                
+                resolve(res)
+                
+            })
+           
+        })
+
+    },
     getChessNo: (userid) => {
         return new Promise((resolve, reject) => {
+            var id = generateUniqueId({
+                length: 3,
+                useLetters: false,
+                useNumbers: true
+              });
+              
+            console.log(id)
+            
+
+
             console.log('get chess no ')
             console.log(userid)
             var userId = userid
@@ -300,7 +334,7 @@ module.exports = {
             var _time=hour+minute+seconds
 
             console.log(_time)
-
+            
             var num1 = userId.charCodeAt(23)
             var num2 = userId.charCodeAt(22)
             var num3 = userId.charCodeAt(21)
@@ -310,7 +344,7 @@ module.exports = {
             var num7 = userId.charCodeAt(17)
             var num8 = userId.charCodeAt(16)
 
-            var total = num1 + num2 + num3 + num4 + num5 + num6 + num7 + num8 +_time
+            var total = num1 + num2 + num3 + num4 + num5 + num6 + num7 + num8 +_time+id
             
             console.log(total)
             resolve(total.toString())
@@ -342,6 +376,8 @@ module.exports = {
         })
     },
     checkRegister: (userid) => {
+        console.log("check register")
+        console.log(userid)
         return new Promise(async (resolve, reject) => {
 
             let registerDetails = await db.get().collection(collection.REGISTEREVENT_COLLECTION).findOne({ userid: userid })
