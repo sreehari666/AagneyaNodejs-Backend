@@ -1,46 +1,96 @@
+<style>
+  /* set entire body that is webpage */
+body{
+	background: #383a3d;
+	padding-top: 15vh;	
+}
+/* set form background colour*/
+form{
+	background: #fff;
+}
+/* set padding and size of th form */
+.form-container{
+	border-radius: 10px;
+	padding: 30px;
+}
+</style>
+
+
+<html>
 <head>
-  <link rel='stylesheet' href='/stylesheets/style.css' />
+ 
+   <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+ 
+  <!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+ {{!-- <link rel="stylesheet" href="stylesheets/login_style.css"> --}}
 </head>
-<div class="topnav">
-  <a class="active" href="#">Judging Panel</a>
-  <a href="judge/judge-logout">Logout</a>
-
-  <a href="#about">About</a>
-
-</div>
-<div class="space"></div>
-
-<form action="/judge/add-marks" method="POST">
-  <div class="container-judge">
-
-
-    <div class="judge-header">
-      <h1>Judges Panel</h1>
-    </div>
-    <hr>
-
-
-    <label><b>Chess Number</b></label>
-
-
-    <input type="text" placeholder="Enter Chess Number" name="chessno" id="chessno" required>
-
-    <label><b>Item</b></label>
-    
-    <select name="item" id="item" style="width: 30%;" required>
-      {{#each response}}
-      <option value="{{this.itemname}}">{{this.itemname}}</option>
-      {{/each}}
-    </select>
-    
-    {{!-- <input type="text" placeholder="Enter Item"  name="item" id="item" required> --}}
-
-    <br><label><b>Marks</b></label>
-    <input type="text" placeholder="Enter Marks" name="marks" id="marks" required>
-    <hr>
-
-    <button type="submit" onclick="return confirm('Do you want to submit ?')" class="registerbtn">Submit</button>
-  </div>
-
-
-</form>
+ 
+<body>
+  <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<!-- Login form creation starts-->
+  <section class="container-fluid">
+    <!-- row and justify-content-center class is used to place the form in center -->
+    <section class="row justify-content-center">
+      <section class="col-12 col-sm-6 col-md-4">
+        <form class="form-container" action="/judge/add_marks" method="POST">
+        
+        
+          
+        <div class="form-group" >
+          <br>
+          <h4 class="text-center font-weight-bold">Judges Panel</h4>
+          {{#if done}}
+            <center><p>{{done}} </p></center>
+          {{/if}}
+          {{#if chestM}}
+          <center><p>Mark for ChestNo: {{chestM}} </p></center>
+          {{/if}}
+          {{#if Err}}
+          <center><p style="color: red;">{{Err}}</p></center>
+          {{/if}}
+          {{#if disable_chest}}
+          <label for="InputEmail1">Chest Number</label>
+           <input type="number" class="form-control" name="chessno" id="chessno" placeholder="Enter chest number" required>
+           <input type="text" class="form-control" name="itemname" value="no" hidden>
+           <input type="text" class="form-control" name="prize" value="no" hidden>
+           {{/if}}
+        </div>
+        {{#if disable_chest}}
+        <button type="submit" class="btn btn-primary btn-block">Check</button>
+        {{/if}}
+        <br>
+        {{#if display}}
+            {{#if chestM}}
+            <input type="number" class="form-control" name="chessno" id="chessno" value="{{chestM}}" hidden>
+            {{/if}}
+            <label for="InputEmail1">Select Item</label>&nbsp;
+            <select class="form-select form-select-lg mb-3" name="itemname" aria-label=".form-select-lg example" style="width: 60%; height: 30px;">
+              <option selected disabled>Select</option >
+              {{#each itemsList}}
+              <option value="{{this}}">{{this}}</option>
+              {{/each}}
+            </select>
+            <label for="InputEmail1">Select Prize</label>&nbsp;
+            <select class="form-select form-select-lg mb-3" name="mark" aria-label=".form-select-lg example" style="width: 60%; height: 30px;">
+              <option selected disabled>Select</option >
+              <option value="20">First</option>
+              <option value="10">Second</option>
+              <option value="5">Third</option>
+            </select>
+            <br>
+            <button type="submit" class="btn btn-primary btn-block" onclick="return confirm('Make sure that the given data is correct, It can not be modified after submission ')">Submit</button>
+        {{/if}}
+        </form>
+      </section>
+    </section>
+  </section>
+<!-- Login form creation ends -->
+</body>
+</html>

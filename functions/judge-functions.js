@@ -48,21 +48,37 @@ module.exports={
             resolve(judgesDetails)
         })
     },
-    addMarks:(chessno,mark)=>{
-        console.log(mark)
-        // var chessNo=marks.chessno
-        // var Item=marks.item
-        // var Mark=marks.marks
+    addMarks:(chessno,detail)=>{
+        var markObj={
+            "itemname":detail.itemname,
+            "mark":Number(detail.mark)
+        }
+        
+        var chestArr=[Number(chessno)]
 
         return new Promise(async (resolve, reject) => {
 
-            db.get().collection('registered').updateOne({chessno:chessno},{$push:{marks:mark}}).then((data) => {
+            db.get().collection('registered').updateOne({chessno:chestArr},{$push:{marks:markObj}}).then((data) => {
 
-                resolve()
+                resolve(data)
 
             })
         })
     },
+    checkUserChest:(chessno)=>{
+        
+        var chestArr=[Number(chessno)]
+        console.log(chestArr)
+        return new Promise(async (resolve, reject) => {
+
+            db.get().collection('registered').findOne({chessno:chestArr}).then((data) => {
+
+                resolve(data)
+
+            })
+        })
+    },
+    
     getUserDatas:(token)=>{
         return new Promise(async(resolve,reject)=>{
             console.log(token)

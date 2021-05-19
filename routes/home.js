@@ -423,7 +423,7 @@ router.post('/register-for-events/:id', function (req, res) {
 
         eventFunctions.registerEvent(req.body).then((response) => {
           console.log(response)
-          const _num = 1000;
+          const _num = 100;
           if(response){
             eventFunctions.pushChessno(req.params.id, _num).then((res1) => {
               var success = 'Registration done'
