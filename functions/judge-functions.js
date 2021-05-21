@@ -48,13 +48,14 @@ module.exports={
             resolve(judgesDetails)
         })
     },
-    addMarks:(chessno,details,userGS)=>{
+    addMarks:(chessno,details,userGS,item_type)=>{
         var markObj;
         console.log(userGS)
         if(userGS=='solo' && details.mark == "First"){
             markObj={
                 "itemname":details.itemname,
                 "grouporsolo":userGS,
+                "itemtype":item_type,
                 "mark":Number(5),
             }
         }
@@ -62,6 +63,7 @@ module.exports={
             markObj={
                 "itemname":details.itemname,
                 "grouporsolo":userGS,
+                "itemtype":item_type,
                 "mark":Number(3),
             }
         }
@@ -69,6 +71,7 @@ module.exports={
             markObj={
                 "itemname":details.itemname,
                 "grouporsolo":userGS,
+                "itemtype":item_type,
                 "mark":Number(1),
             }
         }
@@ -77,6 +80,7 @@ module.exports={
             markObj={
                 "itemname":details.itemname,
                 "grouporsolo":userGS,
+                "itemtype":item_type,
                 "mark":Number(10),
             }
         }
@@ -84,6 +88,7 @@ module.exports={
             markObj={
                 "itemname":details.itemname,
                 "grouporsolo":userGS,
+                "itemtype":item_type,
                 "mark":Number(5),
             }
         }
@@ -91,6 +96,7 @@ module.exports={
             markObj={
                 "itemname":details.itemname,
                 "grouporsolo":userGS,
+                "itemtype":item_type,
                 "mark":Number(3),
             }
         }

@@ -60,6 +60,7 @@ router.post('/add_marks', verifyLoginJudge, (req, res) => {
     console.log(_gsData)
     
     userGS = _gsData.grouporsolo
+    item_type=_gsData.itemtype
   })
   var chestno = req.body.chessno;
 
@@ -112,7 +113,7 @@ router.post('/add_marks', verifyLoginJudge, (req, res) => {
           var Err = "Evaluation already done"
           res.render('judge/judge', { Err, disable_chest })
         } else {
-          judgeFunctions.addMarks(chestno, req.body, userGS).then((data) => {
+          judgeFunctions.addMarks(chestno, req.body, userGS,item_type).then((data) => {
 
             if (data) {
               var disable_chest = "yes"
@@ -181,7 +182,7 @@ router.post('/add_marks', verifyLoginJudge, (req, res) => {
         }
       } else {
 
-        judgeFunctions.addMarks(chestno, req.body, userGS).then((data) => {
+        judgeFunctions.addMarks(chestno, req.body, userGS,item_type).then((data) => {
 
           if (data) {
             var disable_chest = "yes"

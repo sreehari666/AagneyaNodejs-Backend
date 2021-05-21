@@ -1,0 +1,68 @@
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+.button {
+  border-radius: 30px;
+  color: white;
+  background: linear-gradient(to right,#ff105f,#ffad06);
+
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+</style>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Reg No</th>
+    <th>Email</th>
+    <th>Department</th>
+    <th>Semester</th>
+    <th>gender</th>
+    <th>Total Points</th>
+    <th>Upload to winner collection</th>
+    
+    
+    
+  </tr>
+  {{#each final_List_}}
+  <tr>
+    <td>{{this.name}}</td>
+    <td>{{this.regno}}</td>
+    <td>{{this.email}}</td>
+    <td>{{this.department}}</td>
+    <td>{{this.semester}}</td>
+    <td>{{this.gender}}</td>
+    <td>{{this.tmark}}</td>
+    
+    <td><a href="upload-award-winner/{{this.chestno}}/{{this.tmark}}/{{this.award}}" onclick="return confirm('Are you sure to upload')">
+    
+    <button class="button" >Upload</button><br><br>
+    </a></td>
+{{/each}}
+    
+    
+  </tr>
+  
+  
+  </tr>
+</table>

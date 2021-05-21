@@ -44,9 +44,23 @@ tr:nth-child(even) {
   margin: 4px 2px;
   cursor: pointer;
 }
+.button-award {
+  border-radius: 30px;
+  color: white;
+  background: linear-gradient(to right,#ff4810,#19ccae);
+
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
 .button-column{
   float: right;
 }
+
 
 </style>
 </head>
@@ -100,9 +114,34 @@ tr:nth-child(even) {
 </a>
 </div>
 
+<div class="button-column">
+<a href="/app-find-kalaprathibha">
+<button class="button-award" onclick="return confirm('Are you Sure to find award Winners?(The actual award winner is only find after the completion of evaluation by judges)')">Find Kalaprathibha (Boys)</button><br><br>
+</a>
+</div>
+
+<div class="button-column">
+<a href="/app-close-registration">
+<button class="button-award" onclick="return confirm('Are you Sure to find award Winners?(The actual award winner is only find after the completion of evaluation by judges)')">Find Kalathilakam (Girls)</button><br><br>
+</a>
+</div>
+
+<div class="button-column">
+<a href="/app-close-registration">
+<button class="button-award" onclick="return confirm('Are you Sure to find award Winners?(The actual award winner is only find after the completion of evaluation by judges)')">Find Sargaprathibha</button><br><br>
+</a>
+</div>
+
+<div class="button-column">
+<a href="/app-close-registration">
+<button class="button-award" onclick="return confirm('Are you Sure to find award Winners?(The actual award winner is only find after the completion of evaluation by judges)')">Find Chithraprathibha</button><br><br>
+</a>
+</div>
+
+
 
 <br>
-<h2>Edit or Delete Events</h2><br>
+{{!-- <h2>Edit or Delete Events</h2><br> --}}
 
     <table>
   <tr>

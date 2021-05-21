@@ -156,6 +156,116 @@ router.get('/app-event-register/:id', function (req, res) {
 
 })
 
+
+router.get('/app-find-kalaprathibha',(req,res)=>{
+  var awardList_final=[]
+  eventFunctions.getAllRegisteredDetails().then((R_data)=>{
+    for(var i=0;i<R_data.length;i++){
+      console.log("its here")
+      if(R_data[i].marks){
+        console.log("loop2")
+        var _chestno=R_data[i].chessno
+        var chestno=_chestno[0]
+        if(R_data[i].gender == 'male'){
+          console.log("male loop")
+          var markList=R_data[i].marks
+          for(var j=0;j<markList.length;j++){
+            if(markList[j].itemtype == 'onstage' && markList[j].grouporsolo == 'solo'){
+              var markSumList=[]
+              var _mark=markList[j].mark
+              markSumList.push(_mark)
+              var final_sum = markSumList
+              .reduce((a, b) => {
+                return a + b;
+              });
+
+              var awardListObj={
+                "chestno":chestno,
+                "tmark":final_sum,
+              }
+              awardList_final.push(awardListObj)
+              console.log(markSumList)
+              console.log(final_sum)
+            }
+          }
+
+        }
+      }
+    }
+
+    console.log(R_data)
+    console.log("----------------------------")
+    console.log(awardList_final)
+    awardList_final.sort((firstItem, secondItem) => firstItem.tmark - secondItem.tmark);
+    console.log(awardList_final)
+
+    var finalObj_=awardList_final[awardList_final.length - 1]
+    var _awardList=[]
+    for(var i=0;i<awardList_final.length;i++){
+      var tempMark=awardList_final[i].tmark
+      var tempChest=awardList_final[i].chestno
+      if(tempMark == finalObj_.tmark){
+        var tempObj={
+          "chestno":tempChest,
+          "tmark":tempMark,
+        }
+        _awardList.push(tempObj)
+      }
+    }
+    console.log("------------award list-------------")
+    console.log(_awardList)
+    var final_List_=[]
+    for(var i=0;i<_awardList.length;i++){
+      var _tempChest=_awardList[i].chestno
+      var _tempMark=_awardList[i].tmark
+      judgeFunctions.checkUserChest([_tempChest]).then((__data)=>{
+      
+        console.log(__data)
+        console.log(_tempMark)
+        var final_Obj_={
+          "name":__data.name,
+          "email":__data.email,
+          "department":__data.department,
+          "semester":__data.semester,
+          "regno":__data.regno,
+          "chestno":__data.chessno,
+          "gender":__data.gender,
+          "tmark":_tempMark,
+          "award":"Kalaprathibha",
+        }
+        final_List_.push(final_Obj_)
+        res.render('award-winners',{final_List_})
+        
+
+      })
+    }
+    
+  })
+})
+
+//TODO 
+
+// router.get('/upload-award-winner/:chest/:tmark/:award',(req,res)=>{
+//   console.log(req.params.chest)
+//   console.log(req.params.tmark)
+//   console.log(req.params.award)
+//   var t_mark=Number(req.params.tmark)
+//   var award_string=req.params.award
+  
+//   judgeFunctions.checkUserChest([Number(req.params.chest)]).then((register_d)=>{
+//       awardObj={
+//         "name":register_d.name,
+//         "email":register_d.email,
+//         "department":register_d.department,
+//         "semester":register_d.semester,
+        
+//       }
+//   })
+
+// })
+
+
+
 router.get('/app-get-youtube-links', function (req, res) {
   eventFunctions.getAllLinks().then((response) => {
     console.log(response);
@@ -680,7 +790,7 @@ router.post('/app-getUserData', (req, res) => {
 
 // })
 router.post('/register-for-events/:id', function (req, res) {
-  
+
   console.log(req.params.id)
   console.log(req.body)
 
