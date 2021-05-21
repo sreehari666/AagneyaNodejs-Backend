@@ -48,11 +48,53 @@ module.exports={
             resolve(judgesDetails)
         })
     },
-    addMarks:(chessno,detail)=>{
-        var markObj={
-            "itemname":detail.itemname,
-            "mark":Number(detail.mark)
+    addMarks:(chessno,details,userGS)=>{
+        var markObj;
+        console.log(userGS)
+        if(userGS=='solo' && details.mark == "First"){
+            markObj={
+                "itemname":details.itemname,
+                "grouporsolo":userGS,
+                "mark":Number(5),
+            }
         }
+        if(userGS=='solo' && details.mark == "Second"){
+            markObj={
+                "itemname":details.itemname,
+                "grouporsolo":userGS,
+                "mark":Number(3),
+            }
+        }
+        if(userGS=='solo' && details.mark == "Third"){
+            markObj={
+                "itemname":details.itemname,
+                "grouporsolo":userGS,
+                "mark":Number(1),
+            }
+        }
+
+        if(userGS=='group' && details.mark == "First"){
+            markObj={
+                "itemname":details.itemname,
+                "grouporsolo":userGS,
+                "mark":Number(10),
+            }
+        }
+        if(userGS=='group' && details.mark == "Second"){
+            markObj={
+                "itemname":details.itemname,
+                "grouporsolo":userGS,
+                "mark":Number(5),
+            }
+        }
+        if(userGS=='group' && details.mark == "Third"){
+            markObj={
+                "itemname":details.itemname,
+                "grouporsolo":userGS,
+                "mark":Number(3),
+            }
+        }
+        
         
         var chestArr=[Number(chessno)]
 
@@ -90,6 +132,103 @@ module.exports={
             
         })
     },
+    getWinnerData:(chestno)=>{
+        return new Promise(async(resolve,reject)=>{
+           
+            await db.get().collection('winner').findOne({chessno:chestno}).then((data)=>{
+                
+               console.log(data)
+                resolve(data)
+            })
+            
+        })
+    },
+    getGroup_or_Solo:(itemname_)=>{
+        return new Promise(async(resolve,reject)=>{
+           
+            await db.get().collection('item').findOne({itemname:itemname_}).then((data)=>{
+                
+               console.log(data)
+                resolve(data)
+            })
+            
+        })
+    },
+    pushWinnerDescription:(chestno,descrip)=>{
+        return new Promise(async(resolve,reject)=>{
+           
+            await db.get().collection('winner').updateOne({chessno:chestno},{
+                $set:{
+                    
+                    description:descrip,
+                    
+                }
+            }).then((data)=>{
+                
+               console.log(data)
+                resolve(data)
+            })
+            
+        })
+    },
+    announceWinners:(winner_announce)=>{
+        return new Promise(async(resolve,reject)=>{
+           
+            await db.get().collection('admin').updateOne({_id:ObjectId("60a6713de65070afe4cbe825")},{
+                $set:{
+                    
+                    winners:winner_announce,
+                    
+                }
+            }).then((data)=>{
+                
+               console.log(data)
+                resolve(data)
+            })
+            
+        })
+    },
+    getAnnounceWinner:()=>{
+        return new Promise(async(resolve,reject)=>{
+           
+            await db.get().collection('admin').findOne({_id:ObjectId("60a6713de65070afe4cbe825")}).then((data)=>{
+                
+               console.log(data)
+                resolve(data)
+            })
+            
+        })
+    },
+    openRegistration:(value)=>{
+        return new Promise(async(resolve,reject)=>{
+           
+            await db.get().collection('admin').updateOne({_id:ObjectId("60a69ba7e65070afe4cc65ce")},{
+                $set:{
+                    
+                    registration:value,
+                    
+                }
+            }).then((data)=>{
+                
+               console.log(data)
+                resolve(data)
+            })
+            
+        })
+    },
+    get_oc_registration:()=>{
+        return new Promise(async(resolve,reject)=>{
+           
+            await db.get().collection('admin').findOne({_id:ObjectId("60a69ba7e65070afe4cc65ce")}).then((data)=>{
+                
+               console.log(data)
+                resolve(data)
+            })
+            
+        })
+    },
+
+
     
 
 }

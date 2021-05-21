@@ -45,11 +45,18 @@ module.exports = {
             callback(data.ops[0]._id)
         })
     },
-    addWinner: (winnerDetails, callback) => {
+    addWinner: (winnerDetails) => {
         console.log(winnerDetails);
-        db.get().collection('winner').insertOne(winnerDetails).then((data) => {
-            callback(data.ops[0]._id)
+        return new Promise(async(resolve,reject)=>{
+            
+            db.get().collection('winner').insertOne(winnerDetails).then((data)=>{
+                resolve(data.ops[0]._id)
+            })
+            
         })
+        // db.get().collection('winner').insertOne(winnerDetails).then((data) => {
+        //     callback(data.ops[0]._id)
+        // })
     },
     addItem: (item, callback) => {
         console.log(item);
@@ -389,7 +396,7 @@ module.exports = {
     getScoreCSE:()=>{
         return new Promise(async (resolve, reject) => {
 
-            var dpt='cse'
+            var dpt='CSE'
             let registerDetails = await db.get().collection(collection.REGISTEREVENT_COLLECTION).find({ department: dpt }).toArray()
             console.log(registerDetails)
 
@@ -399,7 +406,7 @@ module.exports = {
     getScoreECE:()=>{
         return new Promise(async (resolve, reject) => {
 
-            var dpt='ece'
+            var dpt='ECE'
             let registerDetails = await db.get().collection(collection.REGISTEREVENT_COLLECTION).find({ department: dpt }).toArray()
             console.log(registerDetails)
 
@@ -409,7 +416,7 @@ module.exports = {
     getScoreMECH:()=>{
         return new Promise(async (resolve, reject) => {
 
-            var dpt='mech'
+            var dpt='MECH'
             let registerDetails = await db.get().collection(collection.REGISTEREVENT_COLLECTION).find({ department: dpt }).toArray()
             console.log(registerDetails)
 
@@ -419,7 +426,7 @@ module.exports = {
     getScoreEEE:()=>{
         return new Promise(async (resolve, reject) => {
 
-            var dpt='eee'
+            var dpt='EEE'
             let registerDetails = await db.get().collection(collection.REGISTEREVENT_COLLECTION).find({ department: dpt }).toArray()
             console.log(registerDetails)
 
@@ -429,7 +436,7 @@ module.exports = {
     getScoreCIVIL:()=>{
         return new Promise(async (resolve, reject) => {
 
-            var dpt='civil'
+            var dpt='CIVIL'
             let registerDetails = await db.get().collection(collection.REGISTEREVENT_COLLECTION).find({ department: dpt }).toArray()
             console.log(registerDetails)
 

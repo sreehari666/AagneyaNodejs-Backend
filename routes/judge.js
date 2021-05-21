@@ -53,9 +53,14 @@ router.get('/judge-logout', (req, res) => {
   res.redirect('/')
 })
 
-router.post('/add_marks',verifyLoginJudge, (req, res) => {
-  
+router.post('/add_marks', verifyLoginJudge, (req, res) => {
+  var userGS = '';
   console.log(req.body)
+  judgeFunctions.getGroup_or_Solo(req.body.itemname).then((_gsData) => {
+    console.log(_gsData)
+    
+    userGS = _gsData.grouporsolo
+  })
   var chestno = req.body.chessno;
 
   console.log(chestno)
@@ -63,17 +68,18 @@ router.post('/add_marks',verifyLoginJudge, (req, res) => {
     var display = "yes"
     judgeFunctions.checkUserChest(chestno).then((response) => {
 
-      
-      if (response ) {
+
+      if (response) {
         console.log(response)
         var chestM = response.chessno[0];
         var itemsList = response.itemname;
+
         console.log(itemsList)
-        if(chestM && itemsList){
+        if (chestM && itemsList) {
           res.render('judge/judge', { display, chestM, itemsList })
 
         }
-       
+
 
       } else {
         var Err = 'User not found'
@@ -93,35 +99,158 @@ router.post('/add_marks',verifyLoginJudge, (req, res) => {
         console.log(markList[0].itemname)
         console.log(req.body.itemname)
         console.log(markList.length)
-        
+
         var item_;
         for (var i = 0; i < markList.length; i++) {
           if (markList[i].itemname == req.body.itemname) {
-            
-            item_=markList[i].itemname;
+
+            item_ = markList[i].itemname;
           }
         }
-        if (item_==req.body.itemname) {
+        if (item_ == req.body.itemname) {
           var disable_chest = "yes"
           var Err = "Evaluation already done"
           res.render('judge/judge', { Err, disable_chest })
-        }else{
-          judgeFunctions.addMarks(chestno, req.body).then((data) => {
+        } else {
+          judgeFunctions.addMarks(chestno, req.body, userGS).then((data) => {
+
             if (data) {
               var disable_chest = "yes"
               var done = "Evaluation Completed"
+              judgeFunctions.getWinnerData(chestno).then((winner_d) => {
+                console.log("----------------------------------------------")
+                var winnerDescription = winner_d.description
+                judgeFunctions.checkUserChest(chestno).then((registerDetails) => {
+
+                  var descriptionList = []
+                  var descriptionString = '';
+                  var prizeString = '';
+
+                  var mark_List = registerDetails.marks
+                  console.log("its here")
+                  console.log(mark_List)
+                  for (var i = 0; i < mark_List.length; i++) {
+
+                    var _item_name = mark_List[i].itemname
+                    var _item_gs = mark_List[i].grouporsolo
+                    var _item_mark = mark_List[i].mark
+                    if (_item_mark == 10 && _item_gs == 'group') {
+                      prizeString = "First Prize"
+                    }
+                    if (_item_mark == 5 && _item_gs == 'group') {
+                      prizeString = "Second Prize"
+                    }
+                    if (_item_mark == 3 && _item_gs == 'group') {
+                      prizeString = "Third Prize"
+                    }
+
+
+                    if (_item_mark == 5 && _item_gs == 'solo') {
+                      prizeString = "First"
+                    }
+                    if (_item_mark == 3 && _item_gs == 'solo') {
+                      prizeString = "Second"
+                    }
+                    if (_item_mark == 1 && _item_gs == 'solo') {
+                      prizeString = "Third"
+                    }
+                    console.log(prizeString)
+                    descriptionString = prizeString + " prize in " + _item_name
+                    console.log(descriptionString)
+                    descriptionList.push(descriptionString)
+
+                  }
+                  console.log(descriptionList)
+                  var finalString=descriptionList.join()
+                  console.log(finalString)
+                  judgeFunctions.pushWinnerDescription(chestno,finalString).then((data)=>{
+                    console.log(data)
+                    console.log("updated winner description")
+                  })
+
+                })
+
+              })
+
+
+
               res.render('judge/judge', { done, disable_chest })
             }
-  
+
           })
         }
       } else {
-        
-        judgeFunctions.addMarks(chestno, req.body).then((data) => {
+
+        judgeFunctions.addMarks(chestno, req.body, userGS).then((data) => {
+
           if (data) {
             var disable_chest = "yes"
             var done = "Evaluation Completed"
+
             res.render('judge/judge', { done, disable_chest })
+
+            judgeFunctions.checkUserChest(chestno).then((registeredData) => {
+              var descriptionList = []
+              var descriptionString = '';
+              var prizeString = '';
+
+              var mark_List = registeredData.marks
+              console.log("its here")
+              console.log(mark_List)
+              for (var i = 0; i < mark_List.length; i++) {
+                var _item_name = mark_List[i].itemname
+                var _item_gs = mark_List[i].grouporsolo
+                var _item_mark = mark_List[i].mark
+                if (_item_mark == 10 && _item_gs == 'group') {
+                  prizeString = "First Prize"
+                }
+                if (_item_mark == 5 && _item_gs == 'group') {
+                  prizeString = "Second Prize"
+                }
+                if (_item_mark == 3 && _item_gs == 'group') {
+                  prizeString = "Third Prize"
+                }
+
+
+                if (_item_mark == 5 && _item_gs == 'solo') {
+                  prizeString = "First"
+                }
+                if (_item_mark == 3 && _item_gs == 'solo') {
+                  prizeString = "Second"
+                }
+                if (_item_mark == 1 && _item_gs == 'solo') {
+                  prizeString = "Third"
+                }
+                console.log(prizeString)
+                descriptionString = prizeString + " prize in " + _item_name
+                console.log(descriptionString)
+                descriptionList.push(descriptionString)
+
+              }
+              console.log(descriptionList)
+
+
+              console.log(descriptionList[0])
+
+              var winner_Obj = {
+                "name": registeredData.name,
+                "email":registeredData.email,
+                "department": registeredData.department,
+                "semester": registeredData.semester,
+                "chessno": chestno,
+                "description": descriptionList[0],
+              }
+
+              eventFunctions.addWinner(winner_Obj).then((_data__) => {
+
+                if (_data__) {
+                  console.log("new winner added to winner collection but photo is not uploaded")
+                }
+              })
+
+            })
+
+
           }
 
         })
@@ -136,14 +265,6 @@ router.post('/add_marks',verifyLoginJudge, (req, res) => {
   }
 })
 
-router.post('/add-marks', (req, res) => {
-  console.log(req.body)
-  var chessno = req.body.chessno
-  judgeFunctions.addMarks(chessno, req.body).then((data) => {
-    res.render('judge/judge')
-  })
 
-
-})
 
 module.exports = router;

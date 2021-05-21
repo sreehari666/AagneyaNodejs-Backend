@@ -37,12 +37,52 @@ router.get('/app-get-item-list', function (req, res) {
   })
 })
 
-router.get('/app-get-winner', function (req, res) {
-  eventFunctions.getAllwinners().then((data) => {
-    console.log(data)
-
-    res.send(data)
+router.get('/app-winner-announce', function (req, res){
+  var winnerAnnounce=true;
+  judgeFunctions.announceWinners(winnerAnnounce).then((data)=>{
+    res.redirect('/admin')
   })
+
+})
+
+router.get('/app-winner-stop-announce', function (req, res){
+  var winnerAnnounce=false;
+  judgeFunctions.announceWinners(winnerAnnounce).then((data)=>{
+    res.redirect('/admin')
+  })
+
+})
+
+router.get('/app-get-winner', function (req, res) {
+  judgeFunctions.getAnnounceWinner().then((A_winner)=>{
+    console.log(A_winner.winners)
+    if(A_winner.winners == true){
+
+      eventFunctions.getAllwinners().then((data) => {
+        console.log(data)
+        console.log("-------reversed array------")
+        console.log(data.reverse())
+    
+        res.send(data)
+      })
+
+    }else{
+      var winnerList=[]
+      var winnerObj={
+        _id:'default_landing_image',
+        name:'Welcome to Aagneya',
+        department:' ',
+        semester:' ',
+        description:'From IES College of Engineering'
+
+      }
+      winnerList.push(winnerObj)
+      res.send(winnerList)
+
+    }
+    
+  })
+  
 })
 
 router.get('/app-get-gallery-photos', function (req, res) {
@@ -52,13 +92,67 @@ router.get('/app-get-gallery-photos', function (req, res) {
     res.send(response)
   })
 })
-router.get('/app-event-register/:id', function (req, res) {
-  console.log(req.params.id)
-  var userid = req.params.id
-  eventFunctions.getAllItems().then((response) => {
-    console.log(response);
-    res.render('event-registration', { response, userid })
+
+router.get('/app-open-registration', function(req,res){
+  var value=true
+  judgeFunctions.openRegistration(value).then((data)=>{
+    res.redirect('/admin')
   })
+})
+
+router.get('/app-close-registration', function(req,res){
+  var value=false
+  judgeFunctions.openRegistration(value).then((data)=>{
+    res.redirect('/admin')
+  })
+})
+
+router.get('/app-event-register/:id', function (req, res) {
+
+  judgeFunctions.get_oc_registration().then((data)=>{
+    if(data.registration == true){
+
+      console.log(req.params.id)
+      var userid = req.params.id
+      eventFunctions.getAllItems().then((response) => {
+        console.log(response);
+        userFunctions.getUserData(req.params.id).then((data) => {
+          console.log(data)
+          var dataObj = {
+            name: data.name,
+            email: data.email,
+            regno: data.regno,
+          }
+          console.log(dataObj)
+          var OffStageList = []
+          var onStageGroupList = []
+          var onStageSoloList = []
+          for (var i = 0; i < response.length; i++) {
+            var tempData = response[i]
+            if (tempData.itemtype == 'offstage') {
+              OffStageList.push(tempData.itemname)
+            } else {
+              if (tempData.itemtype == 'onstage' && tempData.grouporsolo == 'group') {
+                onStageGroupList.push(tempData.itemname)
+              }
+              if (tempData.itemtype == 'onstage' && tempData.grouporsolo == 'solo') {
+                onStageSoloList.push(tempData.itemname)
+              }
+            }
+          }
+          console.log(OffStageList)
+    
+          res.render('event-registration', { response, userid, dataObj, OffStageList, onStageGroupList, onStageSoloList })
+        })
+    
+      })
+
+    }else{
+      res.render('register_close')
+    }
+  })
+
+  
 
 })
 
@@ -70,109 +164,291 @@ router.get('/app-get-youtube-links', function (req, res) {
   })
 })
 
-/* GET home page. */
-// router.get('/', function (req, res, next) {
+router.get('/app-get-score', function (req, res) {
+  const totalPoints = 1000
+  var civilPoints = 0.0;
+  var csePoints = 0.0;
+  var ecePoints = 0.0;
+  var eeePoints = 0.0;
+  var mechPoints = 0.0;
 
-//   let user = req.session.user
-//   console.log('my    ')
-//   console.log(user)
+  var civilPercent = 0.0;
+  var csePercent = 0.0;
+  var ecePercent = 0.0;
+  var eeePercent = 0.0;
+  var mechPercent = 0.0;
 
-//   eventFunctions.getAllEvents().then((eventDetails) => {
-//     eventFunctions.getRegisteredDetails().then((registerDetails) => {
+  eventFunctions.getScoreCIVIL().then((details) => {
+    var markObj = []
+    var final_List = []
+    var checkList = []
 
-//       eventFunctions.getScoreCSE().then((details) => {
-//         console.log(details)
-//         console.log("marks")
+    for (var i = 0; i < details.length; i++) {
+      checkList.push(details.marks)
+    }
+    console.log(checkList)
+    console.log(details)
+    if (checkList == '') {
+      console.log("list is empty")
+      civilPoints = 0.0
+      civilPercent = 0.0
+    } else {
 
-//         var length = details.reduce((a, obj) => a + Object.keys(obj).length, 0)
-//         console.log(length / 12)
-//         var totalCSE = 0
-//         for (var i = 0; i < length / 12; i++) {
-//           if(details[i].marks != null){
-//           try {
-//             var scoreObj = details[i].marks[0].marks
-//             totalCSE = Number(totalCSE) + Number(scoreObj)
-//           } catch (error) {
+      for (var i = 0; i < details.length; i++) {
 
-//           }
-//           }
-
-//         }
-//         console.log(totalCSE)
-//         var percentCSE = totalCSE * totalCSE / 100
-//         console.log(percentCSE)
-//         // res.render('home', { title: 'Express', user, eventDetails, registerDetails,totalCSE });
-//         eventFunctions.getScoreECE().then((details) => {
-//           console.log(details)
-//           var length = details.reduce((a, obj) => a + Object.keys(obj).length, 0)
-//           console.log(length / 12)
-//           var totalECE = 0
-//           for (var i = 0; i < length / 12; i++) {
-
-//             var scoreObj = details[i].marks[0].marks
-//             totalECE = Number(totalECE) + Number(scoreObj)
-//           }
-//           console.log(totalECE)
-//           var percentECE = totalECE * totalECE / 100
-//           console.log(percentECE)
-
-//           eventFunctions.getScoreMECH().then((details)=>{
-//             console.log(details)
-//             var length=details.reduce((a,obj)=>a+Object.keys(obj).length,0)
-//             console.log(length/12)
-//             var totalMECH=0
-
-//             for(var i=0;i<length/12;i++){
-
-//               var scoreObj=details[i].marks[0].marks
-//               totalMECH=Number(totalMECH)+Number(scoreObj)
-//             }https://flutter.dev/docs/get-started/install/windows
-//             console.log(totalMECH)
-//             var percentMECH=totalMECH*totalMECH/100
-//             console.log(percentMECH)
-//             eventFunctions.getScoreEEE().then((details)=>{
-//               console.log(details)
-//               var length=details.reduce((a,obj)=>a+Object.keys(obj).length,0)
-//               console.log(length/12)
-//               var totalEEE=0
-//               for(var i=0;i<length/12;i++){
-
-//                 var scoreObj=details[i].marks[0].marks
-//                 totalEEE=Number(totalEEE)+Number(scoreObj)
-//               }
-//               console.log(totalEEE)
-//               var percentEEE=totalEEE*totalEEE/100
-//               console.log(percentEEE)
-//               // res.render('home', { title: 'Express', user, eventDetails, registerDetails, totalCSE, totalECE,totalMECH,totalEEE });
-//               eventFunctions.getScoreCIVIL().then((details)=>{
-//                 console.log(details)
-//                 var length=details.reduce((a,obj)=>a+Object.keys(obj).length,0)
-//                 console.log(length/12)
-//                 var totalCIVIL=0
-//                 for(var i=0;i<length/12;i++){
-
-//                   var scoreObj=details[i].marks[0].marks
-//                   totalCIVIL=Number(totalCIVIL)+Number(scoreObj)
-//                 }
-//                 console.log(totalCIVIL)
-//                 var percentCIVIL=totalCIVIL*totalCIVIL/100
-//                 console.log(percentCIVIL)
-//                 res.render('home', { title: 'Express', user, eventDetails, registerDetails, totalCSE, totalECE,totalMECH,totalEEE,totalCIVIL,percentCSE,percentECE,percentMECH,percentEEE,percentCIVIL });
-
-//               })
-//             })
-//           })
-//         })
-//       })
-
-//     })
+        if (details[i].marks) {
+          markObj.push(details[i].marks)
 
 
-//   })
+        }
+      }
+      //console.log(markObj[0])
+      for (var i = 0; i < markObj.length; i++) {
+        console.log("--------")
+        console.log(markObj[i])
 
-// });
+        console.log("--------")
+        var tempList = markObj[i]
+        for (var j = 0; j < tempList.length; j++) {
+          final_List.push(tempList[j].mark)
+        }
 
-router.get('/app-get-score', function (req, res, next) {
+      }
+      console.log(final_List)
+      for (var i = 0; i < final_List.length; i++) {
+        civilPoints = civilPoints + final_List[i]
+      }
+      console.log(civilPoints)
+
+      civilPercent = (civilPoints / totalPoints) * 100
+      console.log(civilPercent)
+    }
+                    // ------------cse-----------
+                    eventFunctions.getScoreCSE().then((details) => {
+                      var markObj = []
+                      var final_List = []
+                      var checkList = []
+                  
+                      for (var i = 0; i < details.length; i++) {
+                        checkList.push(details.marks)
+                      }
+                      console.log(checkList)
+                      console.log(details)
+                      if (checkList == '') {
+                        console.log("list is empty")
+                        csePoints = 0.0
+                        csePercent = 0.0
+                      } else {
+                  
+                        for (var i = 0; i < details.length; i++) {
+                  
+                          if (details[i].marks) {
+                            markObj.push(details[i].marks)
+                  
+                  
+                          }
+                        }
+                        //console.log(markObj[0])
+                        for (var i = 0; i < markObj.length; i++) {
+                          console.log("--------")
+                          console.log(markObj[i])
+                  
+                          console.log("--------")
+                          var tempList = markObj[i]
+                          for (var j = 0; j < tempList.length; j++) {
+                            final_List.push(tempList[j].mark)
+                          }
+                  
+                        }
+                        console.log(final_List)
+                        for (var i = 0; i < final_List.length; i++) {
+                          csePoints = csePoints + final_List[i]
+                        }
+                        console.log(csePoints)
+                  
+                        csePercent = (csePoints / totalPoints) * 100
+                        console.log(csePercent)
+                      }
+
+                             // ----------------ece-----------------
+
+                             eventFunctions.getScoreECE().then((details) => {
+
+                                    var markObj = []
+                                    var final_List = []
+                                    var checkList = []
+                                
+                                    for (var i = 0; i < details.length; i++) {
+                                      checkList.push(details.marks)
+                                    }
+                                    console.log(checkList)
+                                    console.log(details)
+                                    if (checkList == '') {
+                                      console.log("list is empty")
+                                      ecePoints = 0.0
+                                      ecePercent = 0.0
+                                    } else {
+                                
+                                      for (var i = 0; i < details.length; i++) {
+                                
+                                        if (details[i].marks) {
+                                          markObj.push(details[i].marks)
+                                
+                                
+                                        }
+                                      }
+                                      //console.log(markObj[0])
+                                      for (var i = 0; i < markObj.length; i++) {
+                                        console.log("--------")
+                                        console.log(markObj[i])
+                                
+                                        console.log("--------")
+                                        var tempList = markObj[i]
+                                        for (var j = 0; j < tempList.length; j++) {
+                                          final_List.push(tempList[j].mark)
+                                        }
+                                
+                                      }
+                                      console.log(final_List)
+                                      for (var i = 0; i < final_List.length; i++) {
+                                        ecePoints = ecePoints + final_List[i]
+                                      }
+                                      console.log(ecePoints)
+                                
+                                      ecePercent = (ecePoints / totalPoints) * 100
+                                      console.log(ecePercent)
+                                    }
+              
+                                     // ----------------eee-----------------
+                                    
+                                     eventFunctions.getScoreEEE().then((details) => {
+                               
+                                      var markObj = []
+                                      var final_List = []
+                                      var checkList = []
+                                  
+                                      for (var i = 0; i < details.length; i++) {
+                                        checkList.push(details.marks)
+                                      }
+                                      console.log(checkList)
+                                      console.log(details)
+                                      if (checkList == '') {
+                                        console.log("list is empty")
+                                        eeePoints = 0.0
+                                        eeePercent = 0.0
+                                      } else {
+                                  
+                                        for (var i = 0; i < details.length; i++) {
+                                  
+                                          if (details[i].marks) {
+                                            markObj.push(details[i].marks)
+                                  
+                                  
+                                          }
+                                        }
+                                        //console.log(markObj[0])
+                                        for (var i = 0; i < markObj.length; i++) {
+                                          console.log("--------")
+                                          console.log(markObj[i])
+                                  
+                                          console.log("--------")
+                                          var tempList = markObj[i]
+                                          for (var j = 0; j < tempList.length; j++) {
+                                            final_List.push(tempList[j].mark)
+                                          }
+                                  
+                                        }
+                                        console.log(final_List)
+                                        for (var i = 0; i < final_List.length; i++) {
+                                          eeePoints = eeePoints + final_List[i]
+                                        }
+                                        console.log(eeePoints)
+                                  
+                                        eeePercent = (eeePoints / totalPoints) * 100
+                                        console.log(eeePercent)
+                                      }
+                
+                                       // ----------------mech-----------------
+                                       eventFunctions.getScoreMECH().then((details) => {
+                               
+                                        var markObj = []
+                                        var final_List = []
+                                        var checkList = []
+                                    
+                                        for (var i = 0; i < details.length; i++) {
+                                          checkList.push(details.marks)
+                                        }
+                                        console.log(checkList)
+                                        console.log(details)
+                                        if (checkList == '') {
+                                          console.log("list is empty")
+                                          mechPoints = 0.0
+                                          mechPercent = 0.0
+                                        } else {
+                                    
+                                          for (var i = 0; i < details.length; i++) {
+                                    
+                                            if (details[i].marks) {
+                                              markObj.push(details[i].marks)
+                                    
+                                    
+                                            }
+                                          }
+                                          //console.log(markObj[0])
+                                          for (var i = 0; i < markObj.length; i++) {
+                                            console.log("--------")
+                                            console.log(markObj[i])
+                                    
+                                            console.log("--------")
+                                            var tempList = markObj[i]
+                                            for (var j = 0; j < tempList.length; j++) {
+                                              final_List.push(tempList[j].mark)
+                                            }
+                                    
+                                          }
+                                          console.log(final_List)
+                                          for (var i = 0; i < final_List.length; i++) {
+                                            mechPoints = mechPoints + final_List[i]
+                                          }
+                                          console.log(mechPoints)
+                                    
+                                          mechPercent = (mechPoints / totalPoints) * 100
+                                          console.log(mechPercent)
+                                        }
+                  
+                                         
+                                          //send
+                                          // res.send({ civilPoints,csePoints,ecePoints,eeePoints,mechPoints,
+                                          // civilPercent,csePercent,ecePercent,eeePercent,mechPercent});
+
+
+                                          res.send({ "civilpoints":civilPoints,"csepoints":csePoints,"ecepoints":ecePoints,"eeepoints":eeePoints,"mechpoints":mechPoints,
+                                        "civilpercent":civilPercent,"csepercent":csePercent,"ecepercent":ecePercent,"eeepercent":eeePercent,"mechpercent":mechPercent});
+                              
+                              
+                                })
+                                       
+                            
+                            
+                              })
+                                     
+                          
+                          
+                            })
+        
+                             
+                  
+                  
+                    })
+
+
+
+  })
+
+
+})
+
+router.get('/app-get-score-new', function (req, res, next) {
 
   let user = req.session.user
   console.log('my    ')
@@ -404,6 +680,7 @@ router.post('/app-getUserData', (req, res) => {
 
 // })
 router.post('/register-for-events/:id', function (req, res) {
+  
   console.log(req.params.id)
   console.log(req.body)
 
@@ -419,34 +696,34 @@ router.post('/register-for-events/:id', function (req, res) {
 
         console.log('last document')
         console.log(res_)
-        if(res_ == null){
+        if (res_ == null) {
 
-        eventFunctions.registerEvent(req.body).then((response) => {
-          console.log(response)
-          const _num = 100;
-          if(response){
-            eventFunctions.pushChessno(req.params.id, _num).then((res1) => {
-              var success = 'Registration done'
-              res.render('event-registration', { success })
-            })
-         
-          }
-            
-        })
-      }else{
+          eventFunctions.registerEvent(req.body).then((response) => {
+            console.log(response)
+            const _num = 100;
+            if (response) {
+              eventFunctions.pushChessno(req.params.id, _num).then((res1) => {
+                var success = 'Registration done'
+                res.render('event-registration', { success })
+              })
 
-           console.log(res_.chessno[0])
-             var chestNew = Number(res_.chessno[0]) + 1
-             eventFunctions.registerEvent(req.body).then((response1) => {
-                  if(response1){
-                    eventFunctions.pushChessno(req.params.id, chestNew).then((res1) => {
-                      var success = 'Registration done'
-                      res.render('event-registration', { success })
-                    })
-                  }
-                    
-             })
-      }
+            }
+
+          })
+        } else {
+
+          console.log(res_.chessno[0])
+          var chestNew = Number(res_.chessno[0]) + 1
+          eventFunctions.registerEvent(req.body).then((response1) => {
+            if (response1) {
+              eventFunctions.pushChessno(req.params.id, chestNew).then((res1) => {
+                var success = 'Registration done'
+                res.render('event-registration', { success })
+              })
+            }
+
+          })
+        }
 
       })
     }

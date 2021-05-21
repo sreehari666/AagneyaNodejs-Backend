@@ -6,13 +6,26 @@
 
 
     <div class="judge-header">
-      <h1>Add items</h1>
+      <h1>Add items/Event</h1>
     </div>
     <hr>
     
-    <label><b>Item Name</b></label>
-    <input type="text" placeholder="Enter Item Name" name="itemname" id="itemname">
+    <label><b>Item/event Name</b></label>
+    <input type="text" placeholder="Enter Item Name" name="itemname" id="itemname" required>
 
+    <p><b>Please select type of event</b></p>
+    <br>
+    <input type="radio" id="onstage" name="itemtype" value="onstage" checked>
+    <label for="onstage">On Stage</label><br>
+    <input type="radio" id="offstage" name="itemtype" value="offstage">
+    <label for="offstage">Off Stage</label><br>
+    <br>
+    <p><b>Group/Solo</b></p>
+    <br>
+    <input type="radio" id="group" name="grouporsolo" value="group" checked>
+    <label for="group">Group</label><br>
+    <input type="radio" id="solo" name="grouporsolo" value="solo">
+    <label for="solo">Solo</label><br>
    
     <hr>
 

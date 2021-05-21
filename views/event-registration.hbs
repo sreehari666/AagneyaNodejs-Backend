@@ -24,7 +24,10 @@
 <body>
     <br><br>
     <center>
-        <h2>Event Registration</h2>
+        <h2><b>Event Registration</b></h2>
+        {{#if dataObj}}
+        <p><b>{{dataObj.email}}</b></p>
+        {{/if}}
     </center>
     <br>
     <style>
@@ -36,38 +39,52 @@
     <div class="container">
         {{#if msg}}
         <div class="alert alert-primary" role="alert">
-        {{msg}}
+            
+            {{msg}}
         </div>
         {{/if}}
         {{#if success}}
         <div class="alert alert-primary" role="alert">
-        {{success}}
+            {{success}}
         </div>
         {{/if}}
 
         {{#if userid}}
         <form action="/register-for-events/{{userid}}" method="POST">
-            
+            {{#if dataObj}}
             <div class="form-group row">
                 <label for="inputPassword" class="col-sm-2 col-form-label">Register Number</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="regno" id="regno" placeholder="Enter register number" required>
+                    <input type="text" class="form-control" name="regno" id="regno" value="{{dataObj.regno}}" placeholder="Enter register number" required>
                 </div>
             </div>
             
+            <div class="form-group row">
+                
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="name" id="name" value="{{dataObj.name}}" hidden>
+                </div>
+            </div>
+            <div class="form-group row">
+                
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="email" id="email" value="{{dataObj.email}}" hidden>
+                </div>
+            </div>
+            {{/if}}
             <input type="text" class="form-control" name="userid" id="userid" value="{{userid}}" hidden>
 
             <div class="form-group row">
                 <div class="form-group">
                     <label for="exampleFormControlSelect1" class="col-sm-2 col-form-label">Select Department</label>
                     <div class="col-sm-10">
-                    <select class="form-control" name="department" id="exampleFormControlSelect1" required>
-                        <option>CIVIL</option>
-                        <option>CSE</option>
-                        <option>MECH</option>
-                        <option>ECE</option>
-                        <option>EEE</option>
-                    </select>
+                        <select class="form-control" name="department" id="exampleFormControlSelect1" required>
+                            <option>CIVIL</option>
+                            <option>CSE</option>
+                            <option>MECH</option>
+                            <option>ECE</option>
+                            <option>EEE</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -76,36 +93,103 @@
                 <div class="form-group">
                     <label for="exampleFormControlSelect1" class="col-sm-2 col-form-label">Select Semester</label>
                     <div class="col-sm-10">
-                    <select class="form-control" id="exampleFormControlSelect1" name="semester" required>
-                        <option>S1</option>
-                        <option>S2</option>
-                        <option>S3</option>
-                        <option>S4</option>
-                        <option>S5</option>
-                        <option>S6</option>
-                        <option>S7</option>
-                        <option>S8</option>
-                    </select>
+                        <select class="form-control" id="exampleFormControlSelect1" name="semester" required>
+                            <option>S1</option>
+                            <option>S2</option>
+                            <option>S3</option>
+                            <option>S4</option>
+                            <option>S5</option>
+                            <option>S6</option>
+                            <option>S7</option>
+                            <option>S8</option>
+                        </select>
                     </div>
                 </div>
             </div>
+            <label for="exampleFormControlSelect1" class="col-sm-2 col-form-label">Select Gender</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="gender" value="female" id="flexRadioDefault1" checked>
+                <label class="form-check-label" for="flexRadioDefault1">
+                    Female
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="gender" value="male" id="flexRadioDefault2" >
+                <label class="form-check-label" for="flexRadioDefault2">
+                    Male
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="gender" value="others" id="flexRadioDefault2">
+                <label class="form-check-label" for="flexRadioDefault2">
+                    Others
+                </label>
+            </div>
 
-
+            <br>
             <div class="form-group row">
-                <label for="inputPassword" class="col-sm-2 col-form-label">Select Items</label>
+                <label for="inputPassword" class="col-sm-2 col-form-label"><b>Select Off Stage Events</b></label>
                 <div class="container-fluid h-100 bg-light text-dark">
 
                     <div class="row justify-content-center align-items-center h-100">
                         <div class="col col-sm-6 col-md-6 col-lg-4 col-xl-3">
                             <div class="form-group">
-                                
-                                <select class="mul-select" multiple="true" name="itemname" required>
-                                    {{#each response}}
-                                    <option value="{{this.itemname}}">{{this.itemname}}</option>
+
+                                <select class="mul-select" multiple="true" id="offStageList" name="itemname" required>
+                                    
+                                    {{#each OffStageList}}
+                                    <option value="{{this}}">{{this}}</option>
                                     {{/each}}
-                                   
+                                    
+
                                 </select>
-                                
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="form-group row">
+                <label for="inputPassword" class="col-sm-2 col-form-label"><b>Select On Stage Events</b></label>
+                <br>
+                <label for="inputPassword" class="col-sm-2 col-form-label">Group Events</label>
+                <div class="container-fluid h-100 bg-light text-dark">
+
+                    <div class="row justify-content-center align-items-center h-100">
+                        <div class="col col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                            <div class="form-group">
+
+                                <select class="mul-select" multiple="true" id="groupEvents" name="itemname" required>
+                                    {{#each onStageGroupList}}
+                                    <option value="{{this}}">{{this}}</option>
+                                    {{/each}}
+
+                                </select>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group row">
+                <label for="inputPassword" class="col-sm-2 col-form-label">Individual Events</label>
+                <div class="container-fluid h-100 bg-light text-dark">
+
+                    <div class="row justify-content-center align-items-center h-100">
+                        <div class="col col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                            <div class="form-group">
+
+                                <select class="mul-select" multiple="true" id="soloEvents" name="itemname" required>
+                                    {{#each onStageSoloList}}
+                                    <option value="{{this}}">{{this}}</option>
+                                    {{/each}}
+
+                                </select>
+
 
                             </div>
                         </div>
@@ -113,9 +197,10 @@
                 </div>
             </div>
 
+
             <div class="container">
                 <div class="form-group row">
-                    <button type="submit" class="btn btn-primary btn-lg btn-block">Register</button>
+                    <button type="submit" class="btn btn-primary btn-lg btn-block" >Register</button>
                 </div>
             </div>
         </form>
@@ -125,11 +210,59 @@
     <script>
         $(document).ready(function () {
             $(".mul-select").select2({
+                
                 placeholder: " Select", //placeholder
                 tags: true,
                 tokenSeparators: ['/', ',', ';', " "]
             });
         })
+
+        $(document).ready(function() {
+
+          var last_valid_selection = null;
+
+          $('#offStageList').change(function(event) {
+
+            if ($(this).val().length > 2) {
+
+              $(this).val(last_valid_selection);
+            } else {
+              last_valid_selection = $(this).val();
+            }
+          });
+        });
+
+        $(document).ready(function() {
+
+          var last_valid_selection = null;
+
+          $('#groupEvents').change(function(event) {
+
+            if ($(this).val().length > 1) {
+
+              $(this).val(last_valid_selection);
+            } else {
+              last_valid_selection = $(this).val();
+            }
+          });
+        });
+
+        $(document).ready(function() {
+
+          var last_valid_selection = null;
+
+          $('#soloEvents').change(function(event) {
+
+            if ($(this).val().length > 1) {
+
+              $(this).val(last_valid_selection);
+            } else {
+              last_valid_selection = $(this).val();
+            }
+          });
+        });
+            
+        
     </script>
 </body>
 
