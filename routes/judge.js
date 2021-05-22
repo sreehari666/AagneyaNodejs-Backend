@@ -61,6 +61,7 @@ router.post('/add_marks', verifyLoginJudge, (req, res) => {
     
     userGS = _gsData.grouporsolo
     item_type=_gsData.itemtype
+    item_subtype=_gsData.subtype
   })
   var chestno = req.body.chessno;
 
@@ -74,8 +75,13 @@ router.post('/add_marks', verifyLoginJudge, (req, res) => {
         console.log(response)
         var chestM = response.chessno[0];
         var itemsList = response.itemname;
-
         console.log(itemsList)
+        console.log(Array.isArray(itemsList))
+        if(Array.isArray(itemsList) == false){
+          itemsList=[]
+          itemsList.push(response.itemname)
+        }
+        
         if (chestM && itemsList) {
           res.render('judge/judge', { display, chestM, itemsList })
 
@@ -113,7 +119,7 @@ router.post('/add_marks', verifyLoginJudge, (req, res) => {
           var Err = "Evaluation already done"
           res.render('judge/judge', { Err, disable_chest })
         } else {
-          judgeFunctions.addMarks(chestno, req.body, userGS,item_type).then((data) => {
+          judgeFunctions.addMarks(chestno, req.body, userGS,item_type,item_subtype).then((data) => {
 
             if (data) {
               var disable_chest = "yes"
@@ -182,7 +188,7 @@ router.post('/add_marks', verifyLoginJudge, (req, res) => {
         }
       } else {
 
-        judgeFunctions.addMarks(chestno, req.body, userGS,item_type).then((data) => {
+        judgeFunctions.addMarks(chestno, req.body, userGS,item_type,item_subtype).then((data) => {
 
           if (data) {
             var disable_chest = "yes"
@@ -239,6 +245,7 @@ router.post('/add_marks', verifyLoginJudge, (req, res) => {
                 "department": registeredData.department,
                 "semester": registeredData.semester,
                 "chessno": chestno,
+                "image_":"pending",
                 "description": descriptionList[0],
               }
 

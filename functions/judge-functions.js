@@ -48,7 +48,7 @@ module.exports={
             resolve(judgesDetails)
         })
     },
-    addMarks:(chessno,details,userGS,item_type)=>{
+    addMarks:(chessno,details,userGS,item_type,item_subtype)=>{
         var markObj;
         console.log(userGS)
         if(userGS=='solo' && details.mark == "First"){
@@ -56,6 +56,7 @@ module.exports={
                 "itemname":details.itemname,
                 "grouporsolo":userGS,
                 "itemtype":item_type,
+                "subtype":item_subtype,
                 "mark":Number(5),
             }
         }
@@ -64,6 +65,7 @@ module.exports={
                 "itemname":details.itemname,
                 "grouporsolo":userGS,
                 "itemtype":item_type,
+                "subtype":item_subtype,
                 "mark":Number(3),
             }
         }
@@ -72,6 +74,7 @@ module.exports={
                 "itemname":details.itemname,
                 "grouporsolo":userGS,
                 "itemtype":item_type,
+                "subtype":item_subtype,
                 "mark":Number(1),
             }
         }
@@ -81,6 +84,7 @@ module.exports={
                 "itemname":details.itemname,
                 "grouporsolo":userGS,
                 "itemtype":item_type,
+                "subtype":item_subtype,
                 "mark":Number(10),
             }
         }
@@ -89,6 +93,7 @@ module.exports={
                 "itemname":details.itemname,
                 "grouporsolo":userGS,
                 "itemtype":item_type,
+                "subtype":item_subtype,
                 "mark":Number(5),
             }
         }
@@ -97,6 +102,7 @@ module.exports={
                 "itemname":details.itemname,
                 "grouporsolo":userGS,
                 "itemtype":item_type,
+                "subtype":item_subtype,
                 "mark":Number(3),
             }
         }
@@ -184,6 +190,23 @@ module.exports={
                 $set:{
                     
                     winners:winner_announce,
+                    
+                }
+            }).then((data)=>{
+                
+               console.log(data)
+                resolve(data)
+            })
+            
+        })
+    },
+    updateWinnerImageStatus:(id,status_)=>{
+        return new Promise(async(resolve,reject)=>{
+           
+            await db.get().collection('winner').updateOne({_id:ObjectId(id)},{
+                $set:{
+                    
+                    image_:status_,
                     
                 }
             }).then((data)=>{

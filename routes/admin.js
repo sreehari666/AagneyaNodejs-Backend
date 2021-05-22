@@ -66,7 +66,10 @@ router.post('/add-winner',function(req,res){
     console.log(id)
     image.mv('./public/winner-images/'+id+'.jpg',(err,done)=>{
       if(!err){
-        res.render('admin/add-winner')
+        judgeFunctions.updateWinnerImageStatus(id,"done").then((data__)=>{
+          res.render('admin/add-winner')
+        })
+        
       }else{
         console.log(err)
       }
@@ -99,10 +102,15 @@ router.post('/edit-winner/:id',function(req,res){
   console.log(req.files.image)
   let id=req.params.id
   eventFunctions.updateWinner(req.params.id,req.body).then(()=>{
-    res.redirect('/admin')
+    
     if(req.files.image){
-      let image=req.files.image
-      image.mv('./public/winner-images/'+id+'.jpg')
+      judgeFunctions.updateWinnerImageStatus(id,"done").then((data__)=>{
+        let image=req.files.image
+        image.mv('./public/winner-images/'+id+'.jpg')
+        res.redirect('/admin')
+      })
+      
+      
     }
   })
 
