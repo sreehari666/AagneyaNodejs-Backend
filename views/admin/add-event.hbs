@@ -15,10 +15,17 @@
     <input type="text" placeholder="Enter Event Name" name="eventname" id="eventname" required>
 
     <br><label ><b>Date</b></label>
-    <input type="text" placeholder="Enter Date" name="date" id="date" required>
+    <input type="date" placeholder="Enter Date" name="date" id="date" required>
 
-    <br><label ><b>Time</b></label>
-    <input type="text" placeholder="Enter Time" name="time" id="time" required>
+    <br>
+    <br>
+    <label for="appt"><b>Time</b></label>
+    
+
+    <input type="time" id="appt" name="time" required>
+    <br>
+    {{!-- <br><label ><b>Time</b></label>
+    <input type="text" placeholder="Enter Time" name="time" id="time" required> --}}
 
     <br><label ><b>Image</b></label>
     <input type="file"  name="image" id="image" enctype="multipart/form-data" required>

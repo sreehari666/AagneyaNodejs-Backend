@@ -59,23 +59,32 @@ router.get('/add-winner',function(req,res) {
   res.render('admin/add-winner')
 })
 router.post('/add-winner',function(req,res){
+  
+  
   console.log(req.body)
   console.log(req.files.image)
-  eventFunctions.addWinner(req.body,(id)=>{
-    let image=req.files.image;
-    console.log(id)
-    image.mv('./public/winner-images/'+id+'.jpg',(err,done)=>{
-      if(!err){
-        judgeFunctions.updateWinnerImageStatus(id,"done").then((data__)=>{
-          res.render('admin/add-winner')
-        })
-        
-      }else{
-        console.log(err)
-      }
+
+  
+    eventFunctions.addWinner(req.body,(id)=>{
+      let image=req.files.image;
+      console.log(id)
+      image.mv('./public/winner-images/'+id+'.jpg',(err,done)=>{
+        if(!err){
+          judgeFunctions.updateWinnerImageStatus(id,"done").then((data__)=>{
+            res.render('admin/add-winner')
+          })
+          
+        }else{
+          console.log(err)
+        }
+      })
+      
     })
     
-  })
+  
+  
+  
+  
 });
 router.get('/view-winners',function (req,res) {
   eventFunctions.getAllwinners().then((data)=>{
@@ -181,20 +190,33 @@ router.get('/delete-item/:id',function(req,res){
 })
 
 router.post('/add-event',function(req,res){
+  
   console.log(req.body)
   console.log(req.files.image)
-  eventFunctions.addEvent(req.body,(id)=>{
-    let image=req.files.image;
-    console.log(id)
-    image.mv('./public/event-images/'+id+'.jpg',(err,done)=>{
-      if(!err){
-        res.render('admin/add-event')
-      }else{
-        console.log(err)
-      }
-    })
+  
+   
+    eventFunctions.addEvent(req.body,(id)=>{
+      var dt_Obj={
+        "date":req.body.date,
+        "time":req.body.time,
+        "eventid":id,
     
-  })
+      }
+      eventFunctions.EventTimeLog(dt_Obj).then((log_)=>{
+      let image=req.files.image;
+      console.log(id)
+      image.mv('./public/event-images/'+id+'.jpg',(err,done)=>{
+        if(!err){
+          res.render('admin/add-event')
+        }else{
+          console.log(err)
+        }
+      })
+    })
+      
+    })
+  
+  
 });
 
 router.post('/add-item',function(req,res){

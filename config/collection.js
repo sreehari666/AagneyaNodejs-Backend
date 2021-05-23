@@ -5,4 +5,5 @@ module.exports={
     JUDGE_COLLECTION:'judge',
     ITEM_COLLECTION:'item',
     ADMIN_COLLECTION:'admin',
+    EVENT_TIME_LOG:'eventlogs',
 }

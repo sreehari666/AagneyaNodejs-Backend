@@ -114,7 +114,12 @@ module.exports = {
             resolve(Links)
         })
     },
-    
+    getAllEventLogs: () => {
+        return new Promise(async (resolve, reject) => {
+            let _data = await db.get().collection(collection.EVENT_TIME_LOG).find().toArray()
+            resolve(_data)
+        })
+    },
     getWinner:(winnerId)=>{
         return new Promise( (resolve, reject) => {
             db.get().collection('winner').findOne({_id:ObjectId(winnerId)}).then((data)=>{
@@ -214,6 +219,18 @@ module.exports = {
             
 
 
+        })
+    },
+    EventTimeLog: (dt_Obj) => {
+        
+        return new Promise(async (resolve, reject) => {
+           
+                db.get().collection(collection.EVENT_TIME_LOG).insertOne(dt_Obj).then((data) => {
+                
+                  resolve(data.ops[0]._id)
+    
+                 })
+        
         })
     },
     pushChessno: (userid,_chessno)=>{

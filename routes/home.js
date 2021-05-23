@@ -37,89 +37,89 @@ router.get('/app-get-item-list', function (req, res) {
   })
 })
 
-router.get('/app-winner-announce', function (req, res){
-  var winnerAnnounce=true;
-  judgeFunctions.announceWinners(winnerAnnounce).then((data)=>{
+router.get('/app-winner-announce', function (req, res) {
+  var winnerAnnounce = true;
+  judgeFunctions.announceWinners(winnerAnnounce).then((data) => {
     res.redirect('/admin')
   })
 
 })
 
-router.get('/app-winner-stop-announce', function (req, res){
-  var winnerAnnounce=false;
-  judgeFunctions.announceWinners(winnerAnnounce).then((data)=>{
+router.get('/app-winner-stop-announce', function (req, res) {
+  var winnerAnnounce = false;
+  judgeFunctions.announceWinners(winnerAnnounce).then((data) => {
     res.redirect('/admin')
   })
 
 })
 
 router.get('/app-get-winner', function (req, res) {
-  judgeFunctions.getAnnounceWinner().then((A_winner)=>{
+  judgeFunctions.getAnnounceWinner().then((A_winner) => {
     console.log(A_winner.winners)
-    if(A_winner.winners == true){
+    if (A_winner.winners == true) {
 
       eventFunctions.getAllwinners().then((data) => {
         console.log(data)
         console.log("-------reversed array------")
         console.log(data.reverse())
-        var shuffledArray=[];
-        
+        var shuffledArray = [];
+
         shuffledArray = data.sort((a, b) => 0.5 - Math.random());
-        
-          
-        
+
+
+
 
         res.send(shuffledArray)
       })
 
-    }else{
-      var winnerList=[]
-      var winnerObj={
-        _id:'default_landing_image',
-        name:'Welcome to Aagneya',
-        department:' ',
-        semester:' ',
-        description:'From IES College of Engineering'
+    } else {
+      var winnerList = []
+      var winnerObj = {
+        _id: 'default_landing_image',
+        name: 'Welcome to Aagneya',
+        department: ' ',
+        semester: ' ',
+        description: 'From IES College of Engineering'
 
       }
       winnerList.push(winnerObj)
       res.send(winnerList)
 
     }
-    
+
   })
-  
+
 })
 
 router.get('/app-get-gallery-photos', function (req, res) {
   eventFunctions.getAllimages().then((response) => {
     console.log(response);
-    var shuffledArray=[];
-        
+    var shuffledArray = [];
+
     shuffledArray = response.sort((a, b) => 0.5 - Math.random());
 
     res.send(shuffledArray)
   })
 })
 
-router.get('/app-open-registration', function(req,res){
-  var value=true
-  judgeFunctions.openRegistration(value).then((data)=>{
+router.get('/app-open-registration', function (req, res) {
+  var value = true
+  judgeFunctions.openRegistration(value).then((data) => {
     res.redirect('/admin')
   })
 })
 
-router.get('/app-close-registration', function(req,res){
-  var value=false
-  judgeFunctions.openRegistration(value).then((data)=>{
+router.get('/app-close-registration', function (req, res) {
+  var value = false
+  judgeFunctions.openRegistration(value).then((data) => {
     res.redirect('/admin')
   })
 })
 
 router.get('/app-event-register/:id', function (req, res) {
 
-  judgeFunctions.get_oc_registration().then((data)=>{
-    if(data.registration == true){
+  judgeFunctions.get_oc_registration().then((data) => {
+    if (data.registration == true) {
 
       console.log(req.params.id)
       var userid = req.params.id
@@ -150,47 +150,47 @@ router.get('/app-event-register/:id', function (req, res) {
             }
           }
           console.log(OffStageList)
-    
+
           res.render('event-registration', { response, userid, dataObj, OffStageList, onStageGroupList, onStageSoloList })
         })
-    
+
       })
 
-    }else{
+    } else {
       res.render('register_close')
     }
   })
 
-  
+
 
 })
 
- //kalaprathibha
-router.get('/app-find-kalaprathibha',(req,res)=>{
-  var awardList_final=[]
-  eventFunctions.getAllRegisteredDetails().then((R_data)=>{
-    for(var i=0;i<R_data.length;i++){
+//kalaprathibha
+router.get('/app-find-kalaprathibha', (req, res) => {
+  var awardList_final = []
+  eventFunctions.getAllRegisteredDetails().then((R_data) => {
+    for (var i = 0; i < R_data.length; i++) {
       console.log("its here")
-      if(R_data[i].marks){
+      if (R_data[i].marks) {
         console.log("loop2")
-        var _chestno=R_data[i].chessno
-        var chestno=_chestno[0]
-        if(R_data[i].gender == 'male'){
+        var _chestno = R_data[i].chessno
+        var chestno = _chestno[0]
+        if (R_data[i].gender == 'male') {
           console.log("male loop")
-          var markList=R_data[i].marks
-          for(var j=0;j<markList.length;j++){
-            if(markList[j].itemtype == 'onstage' && markList[j].grouporsolo == 'solo'){
-              var markSumList=[]
-              var _mark=markList[j].mark
+          var markList = R_data[i].marks
+          for (var j = 0; j < markList.length; j++) {
+            if (markList[j].itemtype == 'onstage' && markList[j].grouporsolo == 'solo') {
+              var markSumList = []
+              var _mark = markList[j].mark
               markSumList.push(_mark)
               var final_sum = markSumList
-              .reduce((a, b) => {
-                return a + b;
-              });
+                .reduce((a, b) => {
+                  return a + b;
+                });
 
-              var awardListObj={
-                "chestno":chestno,
-                "tmark":final_sum,
+              var awardListObj = {
+                "chestno": chestno,
+                "tmark": final_sum,
               }
               awardList_final.push(awardListObj)
               console.log(markSumList)
@@ -208,81 +208,81 @@ router.get('/app-find-kalaprathibha',(req,res)=>{
     awardList_final.sort((firstItem, secondItem) => firstItem.tmark - secondItem.tmark);
     console.log(awardList_final)
 
-    var finalObj_=awardList_final[awardList_final.length - 1]
-    var _awardList=[]
-    for(var i=0;i<awardList_final.length;i++){
-      var tempMark=awardList_final[i].tmark
-      var tempChest=awardList_final[i].chestno
-      if(tempMark == finalObj_.tmark){
-        var tempObj={
-          "chestno":tempChest,
-          "tmark":tempMark,
+    var finalObj_ = awardList_final[awardList_final.length - 1]
+    var _awardList = []
+    for (var i = 0; i < awardList_final.length; i++) {
+      var tempMark = awardList_final[i].tmark
+      var tempChest = awardList_final[i].chestno
+      if (tempMark == finalObj_.tmark) {
+        var tempObj = {
+          "chestno": tempChest,
+          "tmark": tempMark,
         }
         _awardList.push(tempObj)
       }
     }
     console.log("------------award list-------------")
     console.log(_awardList)
-    
-    var final_List_=[]
+
+    var final_List_ = []
     // if(_awardList.lenght==0){
     //   res.redirect('/admin')
     // }
-    for(var i=0;i<_awardList.length;i++){
-      var _tempChest=_awardList[i].chestno
-      var _tempMark=_awardList[i].tmark
-      judgeFunctions.checkUserChest([_tempChest]).then((__data)=>{
-      
+    for (var i = 0; i < _awardList.length; i++) {
+      var _tempChest = _awardList[i].chestno
+      var _tempMark = _awardList[i].tmark
+      judgeFunctions.checkUserChest([_tempChest]).then((__data) => {
+
         console.log(__data)
         console.log(_tempMark)
-        var final_Obj_={
-          "name":__data.name,
-          "email":__data.email,
-          "department":__data.department,
-          "semester":__data.semester,
-          "regno":__data.regno,
-          "chestno":__data.chessno,
-          "gender":__data.gender,
-          "tmark":_tempMark,
-          "award":"Kalaprathibha",
+        var final_Obj_ = {
+          "name": __data.name,
+          "email": __data.email,
+          "department": __data.department,
+          "semester": __data.semester,
+          "regno": __data.regno,
+          "chestno": __data.chessno,
+          "gender": __data.gender,
+          "tmark": _tempMark,
+          "award": "Kalaprathibha",
         }
         final_List_.push(final_Obj_)
-        res.render('award-winners',{final_List_})
-        
+        res.render('award-winners', { final_List_ })
+
 
       })
     }
-    
+
   })
 })
 //kalathilakam
 
-router.get('/app-find-kalathilakam',(req,res)=>{
-  var awardList_final=[]
-  eventFunctions.getAllRegisteredDetails().then((R_data)=>{
-    for(var i=0;i<R_data.length;i++){
+router.get('/app-find-kalathilakam', (req, res) => {
+  var awardList_final = []
+  eventFunctions.getAllRegisteredDetails().then((R_data) => {
+    for (var i = 0; i < R_data.length; i++) {
       console.log("its here")
-      if(R_data[i].marks){
+      if (R_data[i].marks) {
         console.log("loop2")
-        var _chestno=R_data[i].chessno
-        var chestno=_chestno[0]
-        if(R_data[i].gender == 'female'){
+        var _chestno = R_data[i].chessno
+        var chestno = _chestno[0]
+        if (R_data[i].gender == 'female') {
 
           console.log("female loop")
-          var markList=R_data[i].marks
-          for(var j=0;j<markList.length;j++){
-            if(markList[j].itemtype == 'onstage' && markList[j].grouporsolo == 'solo'){
-              var markSumList=[]
-              var _mark=markList[j].mark
+          var markList = R_data[i].marks
+          for (var j = 0; j < markList.length; j++) {
+            if (markList[j].itemtype == 'onstage' && markList[j].grouporsolo == 'solo') {
+              var markSumList = []
+              var _mark = markList[j].mark
               markSumList.push(_mark)
               var final_sum = markSumList
-              .reduce((a, b) => {
-                return a + b;
-              });
+                .reduce((a, b) => {
+                  return a + b;
+                });
 
-              var awardListObj={
-                "chestno":chestno,
-                "tmark":final_sum,
+              var awardListObj = {
+                "chestno": chestno,
+                "tmark": final_sum,
               }
               awardList_final.push(awardListObj)
               console.log(markSumList)
@@ -300,82 +300,82 @@ router.get('/app-find-kalathilakam',(req,res)=>{
     awardList_final.sort((firstItem, secondItem) => firstItem.tmark - secondItem.tmark);
     console.log(awardList_final)
 
-    var finalObj_=awardList_final[awardList_final.length - 1]
-    var _awardList=[]
-    for(var i=0;i<awardList_final.length;i++){
-      var tempMark=awardList_final[i].tmark
-      var tempChest=awardList_final[i].chestno
-      if(tempMark == finalObj_.tmark){
-        var tempObj={
-          "chestno":tempChest,
-          "tmark":tempMark,
+    var finalObj_ = awardList_final[awardList_final.length - 1]
+    var _awardList = []
+    for (var i = 0; i < awardList_final.length; i++) {
+      var tempMark = awardList_final[i].tmark
+      var tempChest = awardList_final[i].chestno
+      if (tempMark == finalObj_.tmark) {
+        var tempObj = {
+          "chestno": tempChest,
+          "tmark": tempMark,
         }
         _awardList.push(tempObj)
       }
     }
     console.log("------------award list-------------")
     console.log(_awardList.length)
-    var final_List_=[]
+    var final_List_ = []
     // if(_awardList.lenght==Number(0)){
     //   res.redirect('/admin')
     // }
-    for(var i=0;i<_awardList.length;i++){
-      var _tempChest=_awardList[i].chestno
-      var _tempMark=_awardList[i].tmark
-      judgeFunctions.checkUserChest([_tempChest]).then((__data)=>{
-      
+    for (var i = 0; i < _awardList.length; i++) {
+      var _tempChest = _awardList[i].chestno
+      var _tempMark = _awardList[i].tmark
+      judgeFunctions.checkUserChest([_tempChest]).then((__data) => {
+
         console.log(__data)
         console.log(_tempMark)
-        var final_Obj_={
-          "name":__data.name,
-          "email":__data.email,
-          "department":__data.department,
-          "semester":__data.semester,
-          "regno":__data.regno,
-          "chestno":__data.chessno,
-          "gender":__data.gender,
-          "tmark":_tempMark,
-          "award":"Kalathilakam",
+        var final_Obj_ = {
+          "name": __data.name,
+          "email": __data.email,
+          "department": __data.department,
+          "semester": __data.semester,
+          "regno": __data.regno,
+          "chestno": __data.chessno,
+          "gender": __data.gender,
+          "tmark": _tempMark,
+          "award": "Kalathilakam",
         }
         final_List_.push(final_Obj_)
-        res.render('award-winners',{final_List_})
-        
+        res.render('award-winners', { final_List_ })
+
 
       })
     }
-    
+
   })
-}) 
+})
 
 
 //sargaprathibha
 
-router.get('/app-find-sargaprathibha',(req,res)=>{
-  var awardList_final=[]
-  eventFunctions.getAllRegisteredDetails().then((R_data)=>{
-    for(var i=0;i<R_data.length;i++){
+router.get('/app-find-sargaprathibha', (req, res) => {
+  var awardList_final = []
+  eventFunctions.getAllRegisteredDetails().then((R_data) => {
+    for (var i = 0; i < R_data.length; i++) {
       console.log("its here")
-      if(R_data[i].marks){
+      if (R_data[i].marks) {
         console.log("loop2")
-        var _chestno=R_data[i].chessno
-        var chestno=_chestno[0]
-        if(R_data[i].gender == 'female' || R_data[i].gender == 'male' || R_data[i].gender == 'others'){
+        var _chestno = R_data[i].chessno
+        var chestno = _chestno[0]
+        if (R_data[i].gender == 'female' || R_data[i].gender == 'male' || R_data[i].gender == 'others') {
 
           console.log("female loop")
-          var markList=R_data[i].marks
-          for(var j=0;j<markList.length;j++){
-            if(markList[j].itemtype == 'offstage' && markList[j].subtype == 'literature'){
-              var markSumList=[]
-              var _mark=markList[j].mark
+          var markList = R_data[i].marks
+          for (var j = 0; j < markList.length; j++) {
+            if (markList[j].itemtype == 'offstage' && markList[j].subtype == 'literature') {
+              var markSumList = []
+              var _mark = markList[j].mark
               markSumList.push(_mark)
               var final_sum = markSumList
-              .reduce((a, b) => {
-                return a + b;
-              });
+                .reduce((a, b) => {
+                  return a + b;
+                });
 
-              var awardListObj={
-                "chestno":chestno,
-                "tmark":final_sum,
+              var awardListObj = {
+                "chestno": chestno,
+                "tmark": final_sum,
               }
               awardList_final.push(awardListObj)
               console.log(markSumList)
@@ -393,81 +393,81 @@ router.get('/app-find-sargaprathibha',(req,res)=>{
     awardList_final.sort((firstItem, secondItem) => firstItem.tmark - secondItem.tmark);
     console.log(awardList_final)
 
-    var finalObj_=awardList_final[awardList_final.length - 1]
-    var _awardList=[]
-    for(var i=0;i<awardList_final.length;i++){
-      var tempMark=awardList_final[i].tmark
-      var tempChest=awardList_final[i].chestno
-      if(tempMark == finalObj_.tmark){
-        var tempObj={
-          "chestno":tempChest,
-          "tmark":tempMark,
+    var finalObj_ = awardList_final[awardList_final.length - 1]
+    var _awardList = []
+    for (var i = 0; i < awardList_final.length; i++) {
+      var tempMark = awardList_final[i].tmark
+      var tempChest = awardList_final[i].chestno
+      if (tempMark == finalObj_.tmark) {
+        var tempObj = {
+          "chestno": tempChest,
+          "tmark": tempMark,
         }
         _awardList.push(tempObj)
       }
     }
     console.log("------------award list-------------")
     console.log(_awardList.length)
-    var final_List_=[]
+    var final_List_ = []
     // if(_awardList.lenght==Number(0)){
     //   res.redirect('/admin')
     // }
-    for(var i=0;i<_awardList.length;i++){
-      var _tempChest=_awardList[i].chestno
-      var _tempMark=_awardList[i].tmark
-      judgeFunctions.checkUserChest([_tempChest]).then((__data)=>{
-      
+    for (var i = 0; i < _awardList.length; i++) {
+      var _tempChest = _awardList[i].chestno
+      var _tempMark = _awardList[i].tmark
+      judgeFunctions.checkUserChest([_tempChest]).then((__data) => {
+
         console.log(__data)
         console.log(_tempMark)
-        var final_Obj_={
-          "name":__data.name,
-          "email":__data.email,
-          "department":__data.department,
-          "semester":__data.semester,
-          "regno":__data.regno,
-          "chestno":__data.chessno,
-          "gender":__data.gender,
-          "tmark":_tempMark,
-          "award":"Sargaprathibha",
+        var final_Obj_ = {
+          "name": __data.name,
+          "email": __data.email,
+          "department": __data.department,
+          "semester": __data.semester,
+          "regno": __data.regno,
+          "chestno": __data.chessno,
+          "gender": __data.gender,
+          "tmark": _tempMark,
+          "award": "Sargaprathibha",
         }
         final_List_.push(final_Obj_)
-        res.render('award-winners',{final_List_})
-        
+        res.render('award-winners', { final_List_ })
+
 
       })
     }
-    
+
   })
-}) 
+})
 
 //chithraprathibha
 
-router.get('/app-find-chithraprathibha',(req,res)=>{
-  var awardList_final=[]
-  eventFunctions.getAllRegisteredDetails().then((R_data)=>{
-    for(var i=0;i<R_data.length;i++){
+router.get('/app-find-chithraprathibha', (req, res) => {
+  var awardList_final = []
+  eventFunctions.getAllRegisteredDetails().then((R_data) => {
+    for (var i = 0; i < R_data.length; i++) {
       console.log("its here")
-      if(R_data[i].marks){
+      if (R_data[i].marks) {
         console.log("loop2")
-        var _chestno=R_data[i].chessno
-        var chestno=_chestno[0]
-        if(R_data[i].gender == 'female' || R_data[i].gender == 'male' || R_data[i].gender == 'others'){
+        var _chestno = R_data[i].chessno
+        var chestno = _chestno[0]
+        if (R_data[i].gender == 'female' || R_data[i].gender == 'male' || R_data[i].gender == 'others') {
 
           console.log("female loop")
-          var markList=R_data[i].marks
-          for(var j=0;j<markList.length;j++){
-            if(markList[j].itemtype == 'offstage' && markList[j].subtype == 'drawing'){
-              var markSumList=[]
-              var _mark=markList[j].mark
+          var markList = R_data[i].marks
+          for (var j = 0; j < markList.length; j++) {
+            if (markList[j].itemtype == 'offstage' && markList[j].subtype == 'drawing') {
+              var markSumList = []
+              var _mark = markList[j].mark
               markSumList.push(_mark)
               var final_sum = markSumList
-              .reduce((a, b) => {
-                return a + b;
-              });
+                .reduce((a, b) => {
+                  return a + b;
+                });
 
-              var awardListObj={
-                "chestno":chestno,
-                "tmark":final_sum,
+              var awardListObj = {
+                "chestno": chestno,
+                "tmark": final_sum,
               }
               awardList_final.push(awardListObj)
               console.log(markSumList)
@@ -485,50 +485,50 @@ router.get('/app-find-chithraprathibha',(req,res)=>{
     awardList_final.sort((firstItem, secondItem) => firstItem.tmark - secondItem.tmark);
     console.log(awardList_final)
 
-    var finalObj_=awardList_final[awardList_final.length - 1]
-    var _awardList=[]
-    for(var i=0;i<awardList_final.length;i++){
-      var tempMark=awardList_final[i].tmark
-      var tempChest=awardList_final[i].chestno
-      if(tempMark == finalObj_.tmark){
-        var tempObj={
-          "chestno":tempChest,
-          "tmark":tempMark,
+    var finalObj_ = awardList_final[awardList_final.length - 1]
+    var _awardList = []
+    for (var i = 0; i < awardList_final.length; i++) {
+      var tempMark = awardList_final[i].tmark
+      var tempChest = awardList_final[i].chestno
+      if (tempMark == finalObj_.tmark) {
+        var tempObj = {
+          "chestno": tempChest,
+          "tmark": tempMark,
         }
         _awardList.push(tempObj)
       }
     }
     console.log("------------award list-------------")
     console.log(_awardList.length)
-    var final_List_=[]
+    var final_List_ = []
     // if(_awardList.lenght==Number(0)){
     //   res.redirect('/admin')
     // }
-    for(var i=0;i<_awardList.length;i++){
-      var _tempChest=_awardList[i].chestno
-      var _tempMark=_awardList[i].tmark
-      judgeFunctions.checkUserChest([_tempChest]).then((__data)=>{
-      
+    for (var i = 0; i < _awardList.length; i++) {
+      var _tempChest = _awardList[i].chestno
+      var _tempMark = _awardList[i].tmark
+      judgeFunctions.checkUserChest([_tempChest]).then((__data) => {
+
         console.log(__data)
         console.log(_tempMark)
-        var final_Obj_={
-          "name":__data.name,
-          "email":__data.email,
-          "department":__data.department,
-          "semester":__data.semester,
-          "regno":__data.regno,
-          "chestno":__data.chessno,
-          "gender":__data.gender,
-          "tmark":_tempMark,
-          "award":"Chithraprathibha",
+        var final_Obj_ = {
+          "name": __data.name,
+          "email": __data.email,
+          "department": __data.department,
+          "semester": __data.semester,
+          "regno": __data.regno,
+          "chestno": __data.chessno,
+          "gender": __data.gender,
+          "tmark": _tempMark,
+          "award": "Chithraprathibha",
         }
         final_List_.push(final_Obj_)
-        res.render('award-winners',{final_List_})
-        
+        res.render('award-winners', { final_List_ })
+
 
       })
     }
-    
+
   })
 })
 
@@ -537,33 +537,33 @@ router.get('/app-find-chithraprathibha',(req,res)=>{
 
 
 
-router.get('/upload-award-winner/:chest/:tmark/:award',(req,res)=>{
+router.get('/upload-award-winner/:chest/:tmark/:award', (req, res) => {
   console.log(req.params.chest)
   console.log(req.params.tmark)
   console.log(req.params.award)
-  var t_mark=Number(req.params.tmark)
-  var award_string=req.params.award
-  var chest_no=req.params.chest 
+  var t_mark = Number(req.params.tmark)
+  var award_string = req.params.award
+  var chest_no = req.params.chest
   var d = new Date();
   var year_ = d.getFullYear();
-  var description_ = award_string+" of "+year_
-  
-  judgeFunctions.checkUserChest([Number(req.params.chest)]).then((register_d)=>{
-      awardObj={
-        "name":register_d.name,
-        "email":register_d.email,
-        "department":register_d.department,
-        "semester":register_d.semester,
-        "chessno":chest_no,
-        "award":award_string,
-        "tmark":t_mark,
-        "image_":"pending",
-        "description":description_,
-        
-      }
-      eventFunctions.addWinner(awardObj).then((_data)=>{
-        res.redirect('/admin')
-      })
+  var description_ = award_string + " of " + year_
+
+  judgeFunctions.checkUserChest([Number(req.params.chest)]).then((register_d) => {
+    awardObj = {
+      "name": register_d.name,
+      "email": register_d.email,
+      "department": register_d.department,
+      "semester": register_d.semester,
+      "chessno": chest_no,
+      "award": award_string,
+      "tmark": t_mark,
+      "image_": "pending",
+      "description": description_,
+
+    }
+    eventFunctions.addWinner(awardObj).then((_data) => {
+      res.redirect('/admin')
+    })
   })
 
 })
@@ -637,223 +637,225 @@ router.get('/app-get-score', function (req, res) {
       civilPercent = (civilPoints / totalPoints) * 100
       console.log(civilPercent)
     }
-                    // ------------cse-----------
-                    eventFunctions.getScoreCSE().then((details) => {
-                      var markObj = []
-                      var final_List = []
-                      var checkList = []
-                  
-                      for (var i = 0; i < details.length; i++) {
-                        checkList.push(details.marks)
-                      }
-                      console.log(checkList)
-                      console.log(details)
-                      if (checkList == '') {
-                        console.log("list is empty")
-                        csePoints = 0.0
-                        csePercent = 0.0
-                      } else {
-                  
-                        for (var i = 0; i < details.length; i++) {
-                  
-                          if (details[i].marks) {
-                            markObj.push(details[i].marks)
-                  
-                  
-                          }
-                        }
-                        //console.log(markObj[0])
-                        for (var i = 0; i < markObj.length; i++) {
-                          console.log("--------")
-                          console.log(markObj[i])
-                  
-                          console.log("--------")
-                          var tempList = markObj[i]
-                          for (var j = 0; j < tempList.length; j++) {
-                            final_List.push(tempList[j].mark)
-                          }
-                  
-                        }
-                        console.log(final_List)
-                        for (var i = 0; i < final_List.length; i++) {
-                          csePoints = csePoints + final_List[i]
-                        }
-                        console.log(csePoints)
-                  
-                        csePercent = (csePoints / totalPoints) * 100
-                        console.log(csePercent)
-                      }
+    // ------------cse-----------
+    eventFunctions.getScoreCSE().then((details) => {
+      var markObj = []
+      var final_List = []
+      var checkList = []
 
-                             // ----------------ece-----------------
+      for (var i = 0; i < details.length; i++) {
+        checkList.push(details.marks)
+      }
+      console.log(checkList)
+      console.log(details)
+      if (checkList == '') {
+        console.log("list is empty")
+        csePoints = 0.0
+        csePercent = 0.0
+      } else {
 
-                             eventFunctions.getScoreECE().then((details) => {
+        for (var i = 0; i < details.length; i++) {
 
-                                    var markObj = []
-                                    var final_List = []
-                                    var checkList = []
-                                
-                                    for (var i = 0; i < details.length; i++) {
-                                      checkList.push(details.marks)
-                                    }
-                                    console.log(checkList)
-                                    console.log(details)
-                                    if (checkList == '') {
-                                      console.log("list is empty")
-                                      ecePoints = 0.0
-                                      ecePercent = 0.0
-                                    } else {
-                                
-                                      for (var i = 0; i < details.length; i++) {
-                                
-                                        if (details[i].marks) {
-                                          markObj.push(details[i].marks)
-                                
-                                
-                                        }
-                                      }
-                                      //console.log(markObj[0])
-                                      for (var i = 0; i < markObj.length; i++) {
-                                        console.log("--------")
-                                        console.log(markObj[i])
-                                
-                                        console.log("--------")
-                                        var tempList = markObj[i]
-                                        for (var j = 0; j < tempList.length; j++) {
-                                          final_List.push(tempList[j].mark)
-                                        }
-                                
-                                      }
-                                      console.log(final_List)
-                                      for (var i = 0; i < final_List.length; i++) {
-                                        ecePoints = ecePoints + final_List[i]
-                                      }
-                                      console.log(ecePoints)
-                                
-                                      ecePercent = (ecePoints / totalPoints) * 100
-                                      console.log(ecePercent)
-                                    }
-              
-                                     // ----------------eee-----------------
-                                    
-                                     eventFunctions.getScoreEEE().then((details) => {
-                               
-                                      var markObj = []
-                                      var final_List = []
-                                      var checkList = []
-                                  
-                                      for (var i = 0; i < details.length; i++) {
-                                        checkList.push(details.marks)
-                                      }
-                                      console.log(checkList)
-                                      console.log(details)
-                                      if (checkList == '') {
-                                        console.log("list is empty")
-                                        eeePoints = 0.0
-                                        eeePercent = 0.0
-                                      } else {
-                                  
-                                        for (var i = 0; i < details.length; i++) {
-                                  
-                                          if (details[i].marks) {
-                                            markObj.push(details[i].marks)
-                                  
-                                  
-                                          }
-                                        }
-                                        //console.log(markObj[0])
-                                        for (var i = 0; i < markObj.length; i++) {
-                                          console.log("--------")
-                                          console.log(markObj[i])
-                                  
-                                          console.log("--------")
-                                          var tempList = markObj[i]
-                                          for (var j = 0; j < tempList.length; j++) {
-                                            final_List.push(tempList[j].mark)
-                                          }
-                                  
-                                        }
-                                        console.log(final_List)
-                                        for (var i = 0; i < final_List.length; i++) {
-                                          eeePoints = eeePoints + final_List[i]
-                                        }
-                                        console.log(eeePoints)
-                                  
-                                        eeePercent = (eeePoints / totalPoints) * 100
-                                        console.log(eeePercent)
-                                      }
-                
-                                       // ----------------mech-----------------
-                                       eventFunctions.getScoreMECH().then((details) => {
-                               
-                                        var markObj = []
-                                        var final_List = []
-                                        var checkList = []
-                                    
-                                        for (var i = 0; i < details.length; i++) {
-                                          checkList.push(details.marks)
-                                        }
-                                        console.log(checkList)
-                                        console.log(details)
-                                        if (checkList == '') {
-                                          console.log("list is empty")
-                                          mechPoints = 0.0
-                                          mechPercent = 0.0
-                                        } else {
-                                    
-                                          for (var i = 0; i < details.length; i++) {
-                                    
-                                            if (details[i].marks) {
-                                              markObj.push(details[i].marks)
-                                    
-                                    
-                                            }
-                                          }
-                                          //console.log(markObj[0])
-                                          for (var i = 0; i < markObj.length; i++) {
-                                            console.log("--------")
-                                            console.log(markObj[i])
-                                    
-                                            console.log("--------")
-                                            var tempList = markObj[i]
-                                            for (var j = 0; j < tempList.length; j++) {
-                                              final_List.push(tempList[j].mark)
-                                            }
-                                    
-                                          }
-                                          console.log(final_List)
-                                          for (var i = 0; i < final_List.length; i++) {
-                                            mechPoints = mechPoints + final_List[i]
-                                          }
-                                          console.log(mechPoints)
-                                    
-                                          mechPercent = (mechPoints / totalPoints) * 100
-                                          console.log(mechPercent)
-                                        }
-                  
-                                         
-                                          //send
-                                          // res.send({ civilPoints,csePoints,ecePoints,eeePoints,mechPoints,
-                                          // civilPercent,csePercent,ecePercent,eeePercent,mechPercent});
+          if (details[i].marks) {
+            markObj.push(details[i].marks)
 
 
-                                          res.send({ "civilpoints":civilPoints,"csepoints":csePoints,"ecepoints":ecePoints,"eeepoints":eeePoints,"mechpoints":mechPoints,
-                                        "civilpercent":civilPercent,"csepercent":csePercent,"ecepercent":ecePercent,"eeepercent":eeePercent,"mechpercent":mechPercent});
-                              
-                              
-                                })
-                                       
-                            
-                            
-                              })
-                                     
-                          
-                          
-                            })
-        
-                             
-                  
-                  
-                    })
+          }
+        }
+        //console.log(markObj[0])
+        for (var i = 0; i < markObj.length; i++) {
+          console.log("--------")
+          console.log(markObj[i])
+
+          console.log("--------")
+          var tempList = markObj[i]
+          for (var j = 0; j < tempList.length; j++) {
+            final_List.push(tempList[j].mark)
+          }
+
+        }
+        console.log(final_List)
+        for (var i = 0; i < final_List.length; i++) {
+          csePoints = csePoints + final_List[i]
+        }
+        console.log(csePoints)
+
+        csePercent = (csePoints / totalPoints) * 100
+        console.log(csePercent)
+      }
+
+      // ----------------ece-----------------
+
+      eventFunctions.getScoreECE().then((details) => {
+
+        var markObj = []
+        var final_List = []
+        var checkList = []
+
+        for (var i = 0; i < details.length; i++) {
+          checkList.push(details.marks)
+        }
+        console.log(checkList)
+        console.log(details)
+        if (checkList == '') {
+          console.log("list is empty")
+          ecePoints = 0.0
+          ecePercent = 0.0
+        } else {
+
+          for (var i = 0; i < details.length; i++) {
+
+            if (details[i].marks) {
+              markObj.push(details[i].marks)
+
+
+            }
+          }
+          //console.log(markObj[0])
+          for (var i = 0; i < markObj.length; i++) {
+            console.log("--------")
+            console.log(markObj[i])
+
+            console.log("--------")
+            var tempList = markObj[i]
+            for (var j = 0; j < tempList.length; j++) {
+              final_List.push(tempList[j].mark)
+            }
+
+          }
+          console.log(final_List)
+          for (var i = 0; i < final_List.length; i++) {
+            ecePoints = ecePoints + final_List[i]
+          }
+          console.log(ecePoints)
+
+          ecePercent = (ecePoints / totalPoints) * 100
+          console.log(ecePercent)
+        }
+
+        // ----------------eee-----------------
+
+        eventFunctions.getScoreEEE().then((details) => {
+
+          var markObj = []
+          var final_List = []
+          var checkList = []
+
+          for (var i = 0; i < details.length; i++) {
+            checkList.push(details.marks)
+          }
+          console.log(checkList)
+          console.log(details)
+          if (checkList == '') {
+            console.log("list is empty")
+            eeePoints = 0.0
+            eeePercent = 0.0
+          } else {
+
+            for (var i = 0; i < details.length; i++) {
+
+              if (details[i].marks) {
+                markObj.push(details[i].marks)
+
+
+              }
+            }
+            //console.log(markObj[0])
+            for (var i = 0; i < markObj.length; i++) {
+              console.log("--------")
+              console.log(markObj[i])
+
+              console.log("--------")
+              var tempList = markObj[i]
+              for (var j = 0; j < tempList.length; j++) {
+                final_List.push(tempList[j].mark)
+              }
+
+            }
+            console.log(final_List)
+            for (var i = 0; i < final_List.length; i++) {
+              eeePoints = eeePoints + final_List[i]
+            }
+            console.log(eeePoints)
+
+            eeePercent = (eeePoints / totalPoints) * 100
+            console.log(eeePercent)
+          }
+
+          // ----------------mech-----------------
+          eventFunctions.getScoreMECH().then((details) => {
+
+            var markObj = []
+            var final_List = []
+            var checkList = []
+
+            for (var i = 0; i < details.length; i++) {
+              checkList.push(details.marks)
+            }
+            console.log(checkList)
+            console.log(details)
+            if (checkList == '') {
+              console.log("list is empty")
+              mechPoints = 0.0
+              mechPercent = 0.0
+            } else {
+
+              for (var i = 0; i < details.length; i++) {
+
+                if (details[i].marks) {
+                  markObj.push(details[i].marks)
+
+
+                }
+              }
+              //console.log(markObj[0])
+              for (var i = 0; i < markObj.length; i++) {
+                console.log("--------")
+                console.log(markObj[i])
+
+                console.log("--------")
+                var tempList = markObj[i]
+                for (var j = 0; j < tempList.length; j++) {
+                  final_List.push(tempList[j].mark)
+                }
+
+              }
+              console.log(final_List)
+              for (var i = 0; i < final_List.length; i++) {
+                mechPoints = mechPoints + final_List[i]
+              }
+              console.log(mechPoints)
+
+              mechPercent = (mechPoints / totalPoints) * 100
+              console.log(mechPercent)
+            }
+
+
+            //send
+            // res.send({ civilPoints,csePoints,ecePoints,eeePoints,mechPoints,
+            // civilPercent,csePercent,ecePercent,eeePercent,mechPercent});
+
+
+            res.send({
+              "civilpoints": civilPoints, "csepoints": csePoints, "ecepoints": ecePoints, "eeepoints": eeePoints, "mechpoints": mechPoints,
+              "civilpercent": civilPercent, "csepercent": csePercent, "ecepercent": ecePercent, "eeepercent": eeePercent, "mechpercent": mechPercent
+            });
+
+
+          })
+
+
+
+        })
+
+
+
+      })
+
+
+
+
+    })
 
 
 
@@ -968,11 +970,132 @@ router.get('/app-get-score-new', function (req, res, next) {
 
 
 router.get('/app-getAllEvents', function (req, res) {
-  eventFunctions.getAllEvents().then((eventDetails) => {
-    console.log(eventDetails)
-    //console.log(eventDetails.length)   
-    res.json(eventDetails)
+  eventFunctions.getAllEventLogs().then((log_values) => {
+    var dateInPast = function (firstDate, secondDate) {
+      if (firstDate.setHours(0, 0, 0, 0) <= secondDate.setHours(0, 0, 0, 0)) {
+        return true;
+      }
+
+      return false;
+    };
+
+    for (var i = 0; i < log_values.length; i++) {
+      var time_is_past=false
+      var _date = log_values[i].date
+      var __date = new Date(_date);
+      var today = new Date();
+      console.log(today.getTime())
+      var current_time=today.getHours+":"+today.getMinutes
+
+      console.log(log_values[i].time)
+      if(current_time > log_values[i].time){
+        console.log("time is in past")
+        time_is_past=true
+      }
+      var date_is_pf = dateInPast(__date, today)
+      console.log(dateInPast(__date, today))
+      if (date_is_pf == true && time_is_past==true) {
+        eventFunctions.deleteEvent(log_values[i].eventid).then((value__) => {
+          console.log(value__.deletedCount)
+          if(value__.deletedCount == 0){
+            console.log("Nothing to delete")
+          }else{
+            console.log("event deleted")
+          }
+          
+        })
+      }
+
+
+
+    }
+    eventFunctions.getAllEvents().then((eventDetails) => {
+      var final_eventList=[]
+      for (var i = 0; i < eventDetails.length; i++) {
+
+        console.log(eventDetails[i])
+        var monthString;
+        var final_date;
+        var date = new Date(eventDetails[i].date)
+        var year = date.getFullYear()
+        var month = date.getMonth() + 1
+        var day = date.getDay()
+        console.log(month.toString())
+        console.log(day)
+        console.log((eventDetails[i].date).slice(-2))
+        switch (month) {
+          case 1:
+            monthString = "January";
+            break;
+          case 2:
+            monthString = "February";
+            break;
+          case 3:
+            monthString = "March";
+            break;
+          case 4:
+            monthString = "April";
+            break;
+          case 5:
+            monthString = "May";
+            break;
+          case 6:
+            monthString = "June";
+            break;
+          case 7:
+            monthString = "July";
+            break;
+          case 8:
+            monthString = "August";
+            break;
+          case 9:
+            monthString = "September";
+            break;
+          case 10:
+            monthString = "October";
+            break;
+          case 11:
+            monthString = "November";
+            break;
+          case 12:
+            monthString = "December";
+            break;
+          default:
+            monthString = "Error";
+        }
+
+        final_date = (eventDetails[i].date).slice(-2) + " " + monthString + " " + year.toString();
+        console.log(final_date)
+
+        function tConvert (time) {
+          // Check correct time format and split into components
+          time = time.toString ().match (/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
+        
+          if (time.length > 1) { // If time format correct
+            time = time.slice (1);  // Remove full string match value
+            time[5] = +time[0] < 12 ? 'AM' : 'PM'; // Set AM/PM
+            time[0] = +time[0] % 12 || 12; // Adjust hours
+          }
+          return time.join (''); // return adjusted time or original string
+        }
+        console.log(tConvert(eventDetails[i].time))
+
+        var event_obj = {
+          "_id": eventDetails[i]._id,
+          "eventname": eventDetails[i].eventname,
+          "date":final_date,
+          "time":tConvert(eventDetails[i].time),
+
+        }
+        final_eventList.push(event_obj)
+
+      }
+
+      console.log(final_eventList)
+      res.json(final_eventList)
+    })
   })
+
 })
 
 
