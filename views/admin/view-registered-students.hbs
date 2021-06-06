@@ -27,25 +27,54 @@ tr:nth-child(even) {
   margin: 4px 2px;
   cursor: pointer;
 }
+.home {
+  background-color: #f1f1f1;
+  color: black;
+}
 
+a {
+  text-decoration: none;
+  display: inline-block;
+  padding: 8px 16px;
+}
+
+a:hover {
+  background-color: #ddd;
+  color: black;
+}
 </style>
-
+<a href="/admin" class="home">&laquo; Back to Home</a>
+<center><h1>Registered Students</h1></center>
 <table>
   <tr>
     <th>Name</th>
     <th>Email</th>
-    <th>Roll NO</th>
-    <th>Item</th>
+    <th>Register NO</th>
+    <th>Chest NO</th>
     <th>Department</th>
+    <th>Semester</th>
+    <th>Item</th>
+    <th>Evaluation</th>
+    
     
   </tr>
   {{#each registerDetails}}
   <tr>
     <td>{{this.name}}</td>
     <td>{{this.email}}</td>
-    <td>{{this.rollno}}</td>
-    <td>{{this.item1}} , {{this.item2}} , {{this.item3}}</td>
+    <td>{{this.regno}}</td>
+    <td>{{this.chessno}}</td>
     <td>{{this.department}}</td>
+    <td>{{this.semester}}</td>
+    <td>{{this.itemname}}</td>
+    {{#if this.marks}}
+    <td style="color: green;">Done</td>
+    {{else}}
+
+  <td style="color: red;">Pending</td>
+  {{/if}}
+
+    
 {{/each}}
     
     

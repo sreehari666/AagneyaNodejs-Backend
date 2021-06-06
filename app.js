@@ -9,7 +9,6 @@ var adminRouter = require('./routes/admin');
 var judgeRouter=require('./routes/judge')
 var session=require('express-session')
 
-// var registerRouter=require('./routes/register');
 
 
 var app = express();
@@ -27,6 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors())
 
 db.connect((err)=>{
   if(err) {
@@ -45,30 +45,30 @@ app.use('/',session({
   secret:"Key",
   resave:false,
   saveUninitialized:false,
-  cookie:{maxAge:600000}
+  cookie:{maxAge:30*24*60*60*1000}
 }))
 app.use('/admin',session({
   name:'adminCookie',
   secret:"Key",
   resave:false,
   saveUninitialized:false,
-  cookie:{maxAge:600000}
+  cookie:{maxAge:24*60*60*1000}
 }))
 app.use('/judge',session({
   name:'judgeCookie',
   secret:"Key",
   resave:false,
   saveUninitialized:false,
-  cookie:{maxAge:600000}
+  cookie:{maxAge:1*60*60*1000}
 }))
 app.use('/', indexRouter);
 app.use('/admin', adminRouter);
 app.use('/judge',judgeRouter);
-app.use(cors())
+
+
 app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
 
-// app.use('/register',registerRouter);
 
 
 // catch 404 and forward to error handler

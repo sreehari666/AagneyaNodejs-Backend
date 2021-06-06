@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{{!-- <!DOCTYPE html>
 <html>
 
 <head>
@@ -26,7 +26,6 @@
 				<input type="text" name="name" class="input-field" placeholder="Name" required>
 				<input type="text" name="email" class="input-field" placeholder="E mail" required>
 				<input type="password" name="password" class="input-field" placeholder="Enter Password" required>
-				<input type="password" name="REpassword" class="input-field" placeholder=" Re Enter Password" required>
 				<div style="padding-bottom: 15px;">
 					<p>View Judges <a href="/admin/view-judges">view judges</a></p>
 				</div>
@@ -42,4 +41,64 @@
 
 </body>
 
-</html>
+</html> --}}
+
+
+
+<head>
+<link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body onload="gfg_Run()">
+<form action="/admin/judge-signup" method="POST" enctype="multipart/form-data">
+  <div class="container-judge">
+
+
+    <div class="judge-header">
+      <h1>Judges Sign up</h1>
+    </div>
+    <hr>
+    <br><label for="name">Name</label>
+    <input type="text" id="name" name="name" class="input-field" placeholder="Enter name" required>
+	<br><label for="email">Email</label>
+	<input type="text" id="email" name="email" class="input-field" placeholder="Enter email" required>
+
+	<p id="pass" hidden></p>
+	<br><label for="id1">Password</label>
+	<input type="text" name="password" id="id1" class="input-field" placeholder="Enter Password" required>
+   
+    <hr>
+
+    <button type="submit" class="registerbtn">Sign Up</button>
+  </div>
+
+
+</form>
+
+<script>
+        var el_down = document.getElementById("pass");
+		var inputF = document.getElementById("id1");
+        /* Function to generate combination of password */
+        function generateP() {
+            var pass = '';
+            var str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + 
+                    'abcdefghijklmnopqrstuvwxyz0123456789@#$';
+              
+            for (i = 1; i <= 8; i++) {
+                var char = Math.floor(Math.random()
+                            * str.length + 1);
+                  
+                pass += str.charAt(char)
+            }
+              
+            return pass;
+        }
+  
+        function gfg_Run() {
+			
+            el_down.innerHTML = generateP();
+			inputF.value=el_down.innerHTML;
+        }
+    </script>
+
+</body>
+

@@ -238,7 +238,7 @@ module.exports = {
 
             db.get().collection('registered').updateOne({userid:userid},{$push:{chessno:_chessno}}).then((data) => {
 
-                resolve()
+                resolve(data)
 
             })
         })
@@ -333,50 +333,7 @@ module.exports = {
         })
 
     },
-    // getChessNo: (userid) => {
-    //     return new Promise((resolve, reject) => {
-    //         var id = generateUniqueId({
-    //             length: 3,
-    //             useLetters: false,
-    //             useNumbers: true
-    //           });
-              
-    //         console.log(id)
-            
 
-
-    //         console.log('get chess no ')
-    //         console.log(userid)
-    //         var userId = userid
-
-    //         var current = new Date();
-
-    //         var hour=current.getHours()
-    //         var minute=current.getMinutes()
-    //         var seconds=current.getSeconds()
-
-    //         var _time=hour+minute+seconds
-
-    //         console.log(_time)
-            
-    //         var num1 = userId.charCodeAt(23)
-    //         var num2 = userId.charCodeAt(22)
-    //         var num3 = userId.charCodeAt(21)
-    //         var num4 = userId.charCodeAt(20)
-    //         var num5 = userId.charCodeAt(19)
-    //         var num6 = userId.charCodeAt(18)
-    //         var num7 = userId.charCodeAt(17)
-    //         var num8 = userId.charCodeAt(16)
-
-    //         var total = num1 + num2 + num3 + num4 + num5 + num6 + num7 + num8 +_time+id
-            
-    //         console.log(total)
-    //         resolve(total.toString())
-    //     })
-
-
-
-    // },
     getAllEvents: () => {
         return new Promise(async (resolve, reject) => {
             let eventDetails = await db.get().collection(collection.EVENT_COLLECTION).find().toArray()
@@ -434,6 +391,16 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
 
             var dpt='MECH'
+            let registerDetails = await db.get().collection(collection.REGISTEREVENT_COLLECTION).find({ department: dpt }).toArray()
+            console.log(registerDetails)
+
+            resolve(registerDetails)
+        })
+    },
+    getScoreWithDept:(dpt)=>{
+        return new Promise(async (resolve, reject) => {
+
+            
             let registerDetails = await db.get().collection(collection.REGISTEREVENT_COLLECTION).find({ department: dpt }).toArray()
             console.log(registerDetails)
 

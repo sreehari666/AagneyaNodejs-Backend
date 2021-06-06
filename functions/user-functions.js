@@ -3,6 +3,12 @@ var collection=require('../config/collection')
 const bcrypt=require('bcrypt')
 const { ObjectId } = require('mongodb');
 
+require("dotenv").config();
+const express = require("express");
+const nodemailer = require("nodemailer");
+const hbs = require("nodemailer-express-handlebars");
+
+
 module.exports={
     doSignup:(userData)=>{
         
@@ -78,5 +84,6 @@ module.exports={
             
         })
     },
+ 
     
 }

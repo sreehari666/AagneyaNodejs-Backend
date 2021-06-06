@@ -57,6 +57,7 @@ module.exports={
                 "grouporsolo":userGS,
                 "itemtype":item_type,
                 "subtype":item_subtype,
+                "position":"first",
                 "mark":Number(5),
             }
         }
@@ -66,6 +67,7 @@ module.exports={
                 "grouporsolo":userGS,
                 "itemtype":item_type,
                 "subtype":item_subtype,
+                "position":"second",
                 "mark":Number(3),
             }
         }
@@ -75,6 +77,7 @@ module.exports={
                 "grouporsolo":userGS,
                 "itemtype":item_type,
                 "subtype":item_subtype,
+                "position":"third",
                 "mark":Number(1),
             }
         }
@@ -85,6 +88,7 @@ module.exports={
                 "grouporsolo":userGS,
                 "itemtype":item_type,
                 "subtype":item_subtype,
+                "position":"first",
                 "mark":Number(10),
             }
         }
@@ -94,6 +98,7 @@ module.exports={
                 "grouporsolo":userGS,
                 "itemtype":item_type,
                 "subtype":item_subtype,
+                "position":"second",
                 "mark":Number(5),
             }
         }
@@ -103,6 +108,7 @@ module.exports={
                 "grouporsolo":userGS,
                 "itemtype":item_type,
                 "subtype":item_subtype,
+                "position":"third",
                 "mark":Number(3),
             }
         }
@@ -183,6 +189,66 @@ module.exports={
             
         })
     },
+    pushItemPostions:(details)=>{
+        console.log("---------------------------------------------")
+        console.log(details)
+        
+        if(details.mark == "First"){
+            var fStatus="1";
+            return new Promise(async(resolve,reject)=>{
+           
+                await db.get().collection('item').updateOne({itemname:details.itemname},{
+                    $set:{
+                        
+                        firstPrizeStatus:fStatus,
+                        
+                        
+                    }
+                }).then((data)=>{
+                   
+                    resolve(data)
+                })
+                
+            })
+        }
+        if(details.mark == "Second"){
+            var sStatus="1";
+            return new Promise(async(resolve,reject)=>{
+           
+                await db.get().collection('item').updateOne({itemname:details.itemname},{
+                    $set:{
+                        
+                        secondPrizeStatus:sStatus,
+                        
+                        
+                    }
+                }).then((data)=>{
+                   
+                    resolve(data)
+                })
+                
+            })
+        }
+        if(details.mark == "Third"){
+            var tStatus="1";
+            return new Promise(async(resolve,reject)=>{
+           
+                await db.get().collection('item').updateOne({itemname:details.itemname},{
+                    $set:{
+                        
+                        thirdPrizeStatus:tStatus,
+                        
+                        
+                    }
+                }).then((data)=>{
+                   
+                    resolve(data)
+                })
+                
+            })
+        }
+        
+    },
     announceWinners:(winner_announce)=>{
         return new Promise(async(resolve,reject)=>{
            
@@ -256,6 +322,16 @@ module.exports={
             
         })
     },
+    pushAttendStatus:(chestno)=>{
+        return new Promise(async (resolve, reject) => {
+
+            db.get().collection('registered').updateOne({chessno:chestno},{$push:{attendedEventStatus:"yes"}}).then((data) => {
+
+                resolve(data)
+
+            })
+        })
+    }
 
 
     

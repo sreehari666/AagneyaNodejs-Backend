@@ -8,17 +8,23 @@
   "dependencies": {
     "alert": "^5.0.10",
     "bcrypt": "^5.0.1",
+    "bluebird": "^3.5.1",
     "body-parser": "^1.19.0",
     "connect-mongo": "^4.4.1",
     "cookie-parser": "~1.4.5",
     "cors": "^2.8.5",
+    "cryptr": "^6.0.2",
     "debug": "~4.3.1",
     "dotenv": "^9.0.2",
+    "ejs": "^3.1.6",
+    "email-templates": "^2.7.1",
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
     "express-session": "^1.17.2",
     "generate-unique-id": "^2.0.1",
+    "handlebars": "^4.7.7",
     "hbs": "^4.1.2",
+    "html-pdf": "^2.2.0",
     "http-errors": "~1.8.0",
     "jquery": "^3.6.0",
     "js-alert": "^1.0.4",
@@ -26,10 +32,12 @@
     "mongodb": "^3.6.7",
     "mongoose": "^5.12.10",
     "morgan": "^1.10.0",
-    "nodemailer": "^6.6.0",
+    "nodemailer": "^6.6.1",
+    "nodemailer-express-handlebars": "^4.0.0",
     "nodemon": "^2.0.7",
     "package.json": "^2.0.1",
     "passport": "^0.4.1",
-    "passport-jwt": "^4.0.0"
+    "passport-jwt": "^4.0.0",
+    "pug": "^3.0.2"
   }
 }

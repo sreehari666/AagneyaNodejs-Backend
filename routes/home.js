@@ -1,6 +1,6 @@
 var express = require('express');
 const session = require('express-session');
-var nodemailer = require('nodemailer');
+
 const { registerEvent } = require('../functions/event-functions');
 var router = express.Router();
 var db = require('../config/connection')
@@ -9,6 +9,28 @@ var eventFunctions = require('../functions/event-functions')
 const userFunctions = require('../functions/user-functions')
 const judgeFunctions = require('../functions/judge-functions');
 const { response } = require('express');
+var cors = require('cors')
+
+router.use(cors())
+
+const nodemailer = require('nodemailer'),
+
+  transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: "teamartfest@gmail.com",
+      pass: "Drishyam3@varun123",
+    },
+  }),
+  EmailTemplate = require('email-templates').EmailTemplate,
+  path = require('path'),
+  Promise = require('bluebird');
+
+
+
+
+
+
 
 const key = "@fdjjjJHDMNXZHHhVXGA899XBHHN^878(&?wshdhshGhghBVDD"
 
@@ -54,6 +76,7 @@ router.get('/app-winner-stop-announce', function (req, res) {
 })
 
 router.get('/app-get-winner', function (req, res) {
+
   judgeFunctions.getAnnounceWinner().then((A_winner) => {
     console.log(A_winner.winners)
     if (A_winner.winners == true) {
@@ -101,6 +124,7 @@ router.get('/app-get-gallery-photos', function (req, res) {
     res.send(shuffledArray)
   })
 })
+
 
 router.get('/app-open-registration', function (req, res) {
   var value = true
@@ -532,11 +556,6 @@ router.get('/app-find-chithraprathibha', (req, res) => {
   })
 })
 
-
-
-
-
-
 router.get('/upload-award-winner/:chest/:tmark/:award', (req, res) => {
   console.log(req.params.chest)
   console.log(req.params.tmark)
@@ -602,7 +621,7 @@ router.get('/app-get-score', function (req, res) {
     }
     console.log(checkList)
     console.log(details)
-    if (checkList == '') {
+    if (checkList.length == 0) {
       console.log("list is empty")
       civilPoints = 0.0
       civilPercent = 0.0
@@ -648,7 +667,7 @@ router.get('/app-get-score', function (req, res) {
       }
       console.log(checkList)
       console.log(details)
-      if (checkList == '') {
+      if (checkList.length == 0) {
         console.log("list is empty")
         csePoints = 0.0
         csePercent = 0.0
@@ -697,7 +716,7 @@ router.get('/app-get-score', function (req, res) {
         }
         console.log(checkList)
         console.log(details)
-        if (checkList == '') {
+        if (checkList.length == 0) {
           console.log("list is empty")
           ecePoints = 0.0
           ecePercent = 0.0
@@ -746,7 +765,7 @@ router.get('/app-get-score', function (req, res) {
           }
           console.log(checkList)
           console.log(details)
-          if (checkList == '') {
+          if (checkList.length == 0) {
             console.log("list is empty")
             eeePoints = 0.0
             eeePercent = 0.0
@@ -794,7 +813,7 @@ router.get('/app-get-score', function (req, res) {
             }
             console.log(checkList)
             console.log(details)
-            if (checkList == '') {
+            if (checkList.length == 0) {
               console.log("list is empty")
               mechPoints = 0.0
               mechPercent = 0.0
@@ -831,10 +850,6 @@ router.get('/app-get-score', function (req, res) {
             }
 
 
-            //send
-            // res.send({ civilPoints,csePoints,ecePoints,eeePoints,mechPoints,
-            // civilPercent,csePercent,ecePercent,eeePercent,mechPercent});
-
 
             res.send({
               "civilpoints": civilPoints, "csepoints": csePoints, "ecepoints": ecePoints, "eeepoints": eeePoints, "mechpoints": mechPoints,
@@ -864,109 +879,7 @@ router.get('/app-get-score', function (req, res) {
 
 })
 
-router.get('/app-get-score-new', function (req, res, next) {
 
-  let user = req.session.user
-  console.log('my    ')
-  console.log(user)
-
-  eventFunctions.getAllEvents().then((eventDetails) => {
-    eventFunctions.getRegisteredDetails().then((registerDetails) => {
-
-      eventFunctions.getScoreCSE().then((details) => {
-        console.log(details)
-        console.log("marks")
-
-        var length = details.reduce((a, obj) => a + Object.keys(obj).length, 0)
-        console.log(length / 12)
-        var totalCSE = 0
-        for (var i = 0; i < length / 12; i++) {
-          if (details[i].marks != null) {
-            try {
-              var scoreObj = details[i].marks[0].marks
-              totalCSE = Number(totalCSE) + Number(scoreObj)
-            } catch (error) {
-              console.log(error)
-            }
-          }
-
-        }
-        console.log(totalCSE)
-        var percentCSE = totalCSE * totalCSE / 100
-        console.log(percentCSE)
-        // res.render('home', { title: 'Express', user, eventDetails, registerDetails,totalCSE });
-        eventFunctions.getScoreECE().then((details) => {
-          console.log(details)
-          var length = details.reduce((a, obj) => a + Object.keys(obj).length, 0)
-          console.log(length / 12)
-          var totalECE = 0
-          for (var i = 0; i < length / 12; i++) {
-
-            var scoreObj = details[i].marks[0].marks
-            totalECE = Number(totalECE) + Number(scoreObj)
-          }
-          console.log(totalECE)
-          var percentECE = totalECE * totalECE / 100
-          console.log(percentECE)
-
-          eventFunctions.getScoreMECH().then((details) => {
-            console.log(details)
-            var length = details.reduce((a, obj) => a + Object.keys(obj).length, 0)
-            console.log(length / 12)
-            var totalMECH = 0
-
-            for (var i = 0; i < length / 12; i++) {
-
-              var scoreObj = details[i].marks[0].marks
-              totalMECH = Number(totalMECH) + Number(scoreObj)
-            }
-            console.log(totalMECH)
-            var percentMECH = totalMECH * totalMECH / 100
-            console.log(percentMECH)
-            eventFunctions.getScoreEEE().then((details) => {
-              console.log(details)
-              var length = details.reduce((a, obj) => a + Object.keys(obj).length, 0)
-              console.log(length / 12)
-              var totalEEE = 0
-              for (var i = 0; i < length / 12; i++) {
-
-                var scoreObj = details[i].marks[0].marks
-                totalEEE = Number(totalEEE) + Number(scoreObj)
-              }
-              console.log(totalEEE)
-              var percentEEE = totalEEE * totalEEE / 100
-              console.log(percentEEE)
-              // res.render('home', { title: 'Express', user, eventDetails, registerDetails, totalCSE, totalECE,totalMECH,totalEEE });
-              eventFunctions.getScoreCIVIL().then((details) => {
-                console.log(details)
-                var length = details.reduce((a, obj) => a + Object.keys(obj).length, 0)
-                console.log(length / 12)
-                var totalCIVIL = 0
-                for (var i = 0; i < length / 12; i++) {
-
-                  var scoreObj = details[i].marks[0].marks
-                  totalCIVIL = Number(totalCIVIL) + Number(scoreObj)
-                }
-                console.log(totalCIVIL)
-                var percentCIVIL = totalCIVIL * totalCIVIL / 100
-                console.log(percentCIVIL)
-                res.send({ totalCSE, totalECE, totalMECH, totalEEE, totalCIVIL, percentCSE, percentECE, percentMECH, percentEEE, percentCIVIL });
-
-              })
-            })
-          })
-        })
-      })
-
-
-
-
-    })
-
-
-  })
-
-});
 
 
 router.get('/app-getAllEvents', function (req, res) {
@@ -980,29 +893,26 @@ router.get('/app-getAllEvents', function (req, res) {
     };
 
     for (var i = 0; i < log_values.length; i++) {
-      var time_is_past=false
+
       var _date = log_values[i].date
       var __date = new Date(_date);
       var today = new Date();
       console.log(today.getTime())
-      var current_time=today.getHours+":"+today.getMinutes
+
 
       console.log(log_values[i].time)
-      if(current_time > log_values[i].time){
-        console.log("time is in past")
-        time_is_past=true
-      }
+
       var date_is_pf = dateInPast(__date, today)
       console.log(dateInPast(__date, today))
-      if (date_is_pf == true && time_is_past==true) {
+      if (date_is_pf == true) {
         eventFunctions.deleteEvent(log_values[i].eventid).then((value__) => {
           console.log(value__.deletedCount)
-          if(value__.deletedCount == 0){
+          if (value__.deletedCount == 0) {
             console.log("Nothing to delete")
-          }else{
+          } else {
             console.log("event deleted")
           }
-          
+
         })
       }
 
@@ -1010,16 +920,18 @@ router.get('/app-getAllEvents', function (req, res) {
 
     }
     eventFunctions.getAllEvents().then((eventDetails) => {
-      var final_eventList=[]
+      var final_eventList = []
       for (var i = 0; i < eventDetails.length; i++) {
 
         console.log(eventDetails[i])
         var monthString;
         var final_date;
+        var day;
         var date = new Date(eventDetails[i].date)
         var year = date.getFullYear()
         var month = date.getMonth() + 1
-        var day = date.getDay()
+        var _day = date.getDay()
+
         console.log(month.toString())
         console.log(day)
         console.log((eventDetails[i].date).slice(-2))
@@ -1064,27 +976,51 @@ router.get('/app-getAllEvents', function (req, res) {
             monthString = "Error";
         }
 
-        final_date = (eventDetails[i].date).slice(-2) + " " + monthString + " " + year.toString();
+        switch (_day) {
+          case 0:
+            day = "Sunday";
+            break;
+          case 1:
+            day = "Monday";
+            break;
+          case 2:
+            day = "Tuesday";
+            break;
+          case 3:
+            day = "Wednesday";
+            break;
+          case 4:
+            day = "Thursday";
+            break;
+          case 5:
+            day = "Friday";
+            break;
+          case 6:
+            day = "Saturday";
+            break;
+        }
+
+        final_date = (eventDetails[i].date).slice(-2) + " " + monthString + " " + year.toString() + " ( " + day + " )";
         console.log(final_date)
 
-        function tConvert (time) {
+        function tConvert(time) {
           // Check correct time format and split into components
-          time = time.toString ().match (/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
-        
+          time = time.toString().match(/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
+
           if (time.length > 1) { // If time format correct
-            time = time.slice (1);  // Remove full string match value
+            time = time.slice(1);  // Remove full string match value
             time[5] = +time[0] < 12 ? 'AM' : 'PM'; // Set AM/PM
             time[0] = +time[0] % 12 || 12; // Adjust hours
           }
-          return time.join (''); // return adjusted time or original string
+          return time.join(''); // return adjusted time or original string
         }
         console.log(tConvert(eventDetails[i].time))
 
         var event_obj = {
           "_id": eventDetails[i]._id,
           "eventname": eventDetails[i].eventname,
-          "date":final_date,
-          "time":tConvert(eventDetails[i].time),
+          "date": final_date,
+          "time": tConvert(eventDetails[i].time),
 
         }
         final_eventList.push(event_obj)
@@ -1190,32 +1126,6 @@ router.post('/app-getUserData', (req, res) => {
 })
 
 
-// router.post('/register-for-events/:id', function (req, res) {
-
-//   console.log(req.body)
-
-//   eventFunctions.checkRegister(req.params.id).then((response) => {
-//    console.log(response)
-//     if(response != null) {
-
-//       var msg='You are already registered'
-//       res.render('event-registration',{msg})
-//     } else {
-//       eventFunctions.registerEvent(req.body).then((response)=>{
-//         eventFunctions.getChessNo(req.params.id).then((chessno)=>{
-//           eventFunctions.pushChessno(req.params.id,chessno).then((_res)=>{
-//             console.log(response)
-//             var success='Registration done'
-//             res.render('event-registration',{success})
-//           })
-//         })
-
-//       })
-//     }
-
-//   })
-
-// })
 router.post('/register-for-events/:id', function (req, res) {
 
   console.log(req.params.id)
@@ -1240,6 +1150,70 @@ router.post('/register-for-events/:id', function (req, res) {
             const _num = 100;
             if (response) {
               eventFunctions.pushChessno(req.params.id, _num).then((res1) => {
+                eventFunctions.getRegisteredDetails(req.params.id).then((register_data_)=>{
+                  
+                  
+
+
+                  function sendEmail(obj) {
+                    return transporter.sendMail(obj);
+                  }
+  
+                  function loadTemplate(templateName, contexts) {
+                    let template = new EmailTemplate(path.join(__dirname, 'templates', templateName));
+                    return Promise.all(contexts.map((context) => {
+                      return new Promise((resolve, reject) => {
+                        template.render(context, (err, result) => {
+                          if (err) reject(err);
+                          else resolve({
+                            email: result,
+                            context,
+                          });
+                        });
+                      });
+                    }));
+                  }
+                  var users=[]
+                  if(Array.isArray(register_data_.itemname) == false){
+                    
+                     var list_obj = {
+                        name: register_data_.name,
+                        email: register_data_.email,
+                        chestno: register_data_.chessno,
+                        itemname: register_data_.itemname,
+                      }
+                      users.push(list_obj)
+    
+                    
+                  }else{
+                    
+                     var list_obj = {
+                        name: register_data_.name,
+                        email: register_data_.email,
+                        chestno: register_data_.chessno,
+                        itemname: (register_data_.itemname).join(),
+                      }
+                      users.push(list_obj)
+                    
+                  }
+
+                  
+  
+                  loadTemplate('register-done-template', users).then((results) => {
+                    return Promise.all(results.map((result) => {
+                      sendEmail({
+                        to: result.context.email,
+                        from: 'Team Aagneya :)',
+                        subject: result.email.subject,
+                        html: result.email.html,
+                        text: result.email.text,
+                      });
+                    }));
+                  }).then(() => {
+                    console.log('Registration done, email successfully sent');
+                  });
+                })
+
                 var success = 'Registration done'
                 res.render('event-registration', { success })
               })
@@ -1254,8 +1228,72 @@ router.post('/register-for-events/:id', function (req, res) {
           eventFunctions.registerEvent(req.body).then((response1) => {
             if (response1) {
               eventFunctions.pushChessno(req.params.id, chestNew).then((res1) => {
-                var success = 'Registration done'
-                res.render('event-registration', { success })
+
+                eventFunctions.getRegisteredDetails(req.body.userid).then((register_data_) => {
+
+                  function sendEmail(obj) {
+                    return transporter.sendMail(obj);
+                  }
+
+                  function loadTemplate(templateName, contexts) {
+                    let template = new EmailTemplate(path.join(__dirname, 'templates', templateName));
+                    return Promise.all(contexts.map((context) => {
+                      return new Promise((resolve, reject) => {
+                        template.render(context, (err, result) => {
+                          if (err) reject(err);
+                          else resolve({
+                            email: result,
+                            context,
+                          });
+                        });
+                      });
+                    }));
+                  }
+                  var users=[]
+                  if(Array.isArray(register_data_.itemname) == false){
+                    
+                     var list_obj = {
+                        name: register_data_.name,
+                        email: register_data_.email,
+                        chestno: register_data_.chessno,
+                        itemname: register_data_.itemname,
+                      }
+                      users.push(list_obj)
+    
+                    
+                  }else{
+                    
+                     var list_obj = {
+                        name: register_data_.name,
+                        email: register_data_.email,
+                        chestno: register_data_.chessno,
+                        itemname: (register_data_.itemname).join(),
+                      }
+                      users.push(list_obj)
+                    
+                  }
+
+                  loadTemplate('register-done-template', users).then((results) => {
+                    return Promise.all(results.map((result) => {
+                      sendEmail({
+                        to: result.context.email,
+                        from: 'Team Aagneya :)',
+                        subject: result.email.subject,
+                        html: result.email.html,
+                        text: result.email.text,
+                      });
+                    }));
+                  }).then(() => {
+                    console.log('Registration done, email successfully sent');
+                  });
+
+
+                  var success = 'Registration done'
+                  res.render('event-registration', { success })
+
+                })
+
+
               })
             }
 

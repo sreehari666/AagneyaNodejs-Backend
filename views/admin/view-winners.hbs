@@ -27,9 +27,24 @@ tr:nth-child(even) {
   margin: 4px 2px;
   cursor: pointer;
 }
+.home {
+  background-color: #f1f1f1;
+  color: black;
+}
 
+a {
+  text-decoration: none;
+  display: inline-block;
+  padding: 8px 16px;
+}
+
+a:hover {
+  background-color: #ddd;
+  color: black;
+}
 </style>
-
+<a href="/admin" class="home">&laquo; Back to Home</a>
+<center><h1>Winners</h1></center>
 <table>
   <tr>
     <th>Name</th>
@@ -49,10 +64,10 @@ tr:nth-child(even) {
     <td>{{this.semester}}</td>
     <td>{{this.image_}}</td>
     <td>{{this.description}}</td>
-    <td><a href="edit-winner/{{this._id}}">
+    <td><a href="/admin/edit-winner/{{this._id}}">
     <button class="button" >Edit</button><br><br>
     </a></td>
-    <td><a href="delete-winner/{{this._id}}" onclick="return confirm('Do you want to delete {{this.name}}')">
+    <td><a href="/admin/delete-winner/{{this._id}}" onclick="return confirm('Do you want to delete {{this.name}}')">
     
     <button class="button" >Delete</button><br><br>
     </a></td>

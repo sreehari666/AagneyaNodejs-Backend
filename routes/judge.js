@@ -14,11 +14,83 @@ const verifyLoginJudge = (req, res, next) => {
 
 /* GET home page. */
 router.get('/', verifyLoginJudge, function (req, res, next) {
-  eventFunctions.getAllItems().then((response) => {
-    console.log(response)
+
+  eventFunctions.getAllRegisteredDetails().then((dataList) => {
+    var newList = []
+    var itemList = [];
+    console.log(dataList)
+    for (var i = 0; i < dataList.length; i++) {
+
+      if (Array.isArray(dataList[i].itemname) == false) {
+
+        itemList.push(dataList[i].itemname)
+      } else {
+        itemList = dataList[i].itemname
+      }
+      console.log(itemList)
+
+      var itemDoneList = []
+      if (dataList[i].marks) {
+
+        var markItem = dataList[i].marks;
+        for (var j = 0; j < markItem.length; j++) {
+          itemDoneList.push(markItem[j].itemname)
+        }
+      }
+
+
+      if ((itemList.length - itemDoneList.length) == 0) {
+        var newObj = {
+          chestno: dataList[i].chessno[0],
+          itemnameRegistered: itemList,
+          itemnameDone: itemDoneList,
+          doneCount: itemDoneList.length,
+          remainingCount: (itemList.length - itemDoneList.length),
+          eCompleted: "Evaluation Completed",
+        }
+      } else {
+        if (dataList[i].attendedEventStatus) {
+          var newObj = {
+            chestno: dataList[i].chessno[0],
+            itemnameRegistered: itemList,
+            itemnameDone: itemDoneList,
+            doneCount: itemDoneList.length,
+            remainingCount: (itemList.length - itemDoneList.length),
+            attendEventStatus: "yes",
+
+          }
+        } else {
+          var newObj = {
+            chestno: dataList[i].chessno[0],
+            itemnameRegistered: itemList,
+            itemnameDone: itemDoneList,
+            doneCount: itemDoneList.length,
+            remainingCount: (itemList.length - itemDoneList.length),
+
+          }
+        }
+      }
+
+
+      newList.push(newObj)
+      console.log(newList)
+    }
     var disable_chest = "yes"
-    res.render('judge/judge', { response, disable_chest });
+    var newListLength = newList.length;
+    var count = 0
+    for (var i = 0; i < newList.length; i++) {
+      if (newList[i].eCompleted) {
+        count = count + 1
+      }
+    }
+    console.log(count)
+    var percent = (count / newListLength) * 100
+    console.log(percent)
+    var remaining = newListLength - count
+    res.render('judge/judge', { disable_chest, newList, newListLength, remaining, percent });
   })
+
+
 
 });
 
@@ -50,18 +122,36 @@ router.post('/judge-login', (req, res) => {
 })
 router.get('/judge-logout', (req, res) => {
   req.session.judgeloggedIn = null
-  res.redirect('/')
+  res.redirect('/judge')
 })
+
+router.get('/event_attended/:chestno/:data/', (req, res) => {
+  console.log(req.params.chestno)
+  console.log(req.params.data)
+  if (req.params.data == "yes") {
+    judgeFunctions.pushAttendStatus([Number(req.params.chestno)]).then((d) => {
+      res.redirect('/judge')
+    })
+  } else {
+    res.redirect('/judge')
+  }
+
+})
+
+
 
 router.post('/add_marks', verifyLoginJudge, (req, res) => {
   var userGS = '';
+  var item_type;
+  var item_subtype;
+
   console.log(req.body)
   judgeFunctions.getGroup_or_Solo(req.body.itemname).then((_gsData) => {
     console.log(_gsData)
-    
+
     userGS = _gsData.grouporsolo
-    item_type=_gsData.itemtype
-    item_subtype=_gsData.subtype
+    item_type = _gsData.itemtype
+    item_subtype = _gsData.subtype
   })
   var chestno = req.body.chessno;
 
@@ -72,26 +162,108 @@ router.post('/add_marks', verifyLoginJudge, (req, res) => {
 
 
       if (response) {
+        var final_itemsList = []
         console.log(response)
         var chestM = response.chessno[0];
         var itemsList = response.itemname;
         console.log(itemsList)
         console.log(Array.isArray(itemsList))
-        if(Array.isArray(itemsList) == false){
-          itemsList=[]
-          itemsList.push(response.itemname)
+        if (Array.isArray(itemsList) == false) {
+
+          final_itemsList.push(response.itemname)
+        } else {
+          for (var i = 0; i < itemsList.length; i++) {
+            final_itemsList.push(itemsList[i])
+
+          }
         }
-        
+
         if (chestM && itemsList) {
-          res.render('judge/judge', { display, chestM, itemsList })
+          res.render('judge/judge', { display, chestM, final_itemsList })
 
         }
 
 
       } else {
-        var Err = 'User not found'
-        var disable_chest = "yes"
-        res.render('judge/judge', { Err, disable_chest })
+
+        eventFunctions.getAllRegisteredDetails().then((dataList) => {
+          var newList = []
+          var itemList = [];
+          console.log(dataList)
+          for (var i = 0; i < dataList.length; i++) {
+
+            if (Array.isArray(dataList[i].itemname) == false) {
+
+              itemList.push(dataList[i].itemname)
+            } else {
+              itemList = dataList[i].itemname
+            }
+            console.log(itemList)
+
+            var itemDoneList = []
+            if (dataList[i].marks) {
+
+              var markItem = dataList[i].marks;
+              for (var j = 0; j < markItem.length; j++) {
+                itemDoneList.push(markItem[j].itemname)
+              }
+            }
+
+
+            if ((itemList.length - itemDoneList.length) == 0) {
+              var newObj = {
+                chestno: dataList[i].chessno[0],
+                itemnameRegistered: itemList,
+                itemnameDone: itemDoneList,
+                doneCount: itemDoneList.length,
+                remainingCount: (itemList.length - itemDoneList.length),
+                eCompleted: "Evaluation Completed",
+              }
+            } else {
+
+              if (dataList[i].attendedEventStatus) {
+                var newObj = {
+                  chestno: dataList[i].chessno[0],
+                  itemnameRegistered: itemList,
+                  itemnameDone: itemDoneList,
+                  doneCount: itemDoneList.length,
+                  remainingCount: (itemList.length - itemDoneList.length),
+                  attendEventStatus: "yes",
+
+                }
+              } else {
+                var newObj = {
+                  chestno: dataList[i].chessno[0],
+                  itemnameRegistered: itemList,
+                  itemnameDone: itemDoneList,
+                  doneCount: itemDoneList.length,
+                  remainingCount: (itemList.length - itemDoneList.length),
+
+                }
+              }
+            }
+
+
+            newList.push(newObj)
+            console.log(newList)
+          }
+          var disable_chest = "yes"
+          var Err = 'User not found'
+          var newListLength = newList.length;
+          var count = 0
+          for (var i = 0; i < newList.length; i++) {
+            if (newList[i].eCompleted) {
+              count = count + 1
+            }
+          }
+          console.log(count)
+          var percent = (count / newListLength) * 100
+          console.log(percent)
+          var remaining = newListLength - count
+          res.render('judge/judge', { Err, disable_chest, newList, newListLength, remaining,percent });
+        })
+
+
       }
 
 
@@ -115,151 +287,374 @@ router.post('/add_marks', verifyLoginJudge, (req, res) => {
           }
         }
         if (item_ == req.body.itemname) {
-          var disable_chest = "yes"
-          var Err = "Evaluation already done"
-          res.render('judge/judge', { Err, disable_chest })
-        } else {
-          judgeFunctions.addMarks(chestno, req.body, userGS,item_type,item_subtype).then((data) => {
 
-            if (data) {
-              var disable_chest = "yes"
-              var done = "Evaluation Completed"
-              judgeFunctions.getWinnerData(chestno).then((winner_d) => {
-                console.log("----------------------------------------------")
-                var winnerDescription = winner_d.description
-                judgeFunctions.checkUserChest(chestno).then((registerDetails) => {
+          eventFunctions.getAllRegisteredDetails().then((dataList) => {
+            var newList = []
+            var itemList = [];
+            console.log(dataList)
+            for (var i = 0; i < dataList.length; i++) {
 
-                  var descriptionList = []
-                  var descriptionString = '';
-                  var prizeString = '';
+              if (Array.isArray(dataList[i].itemname) == false) {
 
-                  var mark_List = registerDetails.marks
-                  console.log("its here")
-                  console.log(mark_List)
-                  for (var i = 0; i < mark_List.length; i++) {
+                itemList.push(dataList[i].itemname)
+              } else {
+                itemList = dataList[i].itemname
+              }
+              console.log(itemList)
+              var itemDoneList = []
 
-                    var _item_name = mark_List[i].itemname
-                    var _item_gs = mark_List[i].grouporsolo
-                    var _item_mark = mark_List[i].mark
-                    if (_item_mark == 10 && _item_gs == 'group') {
-                      prizeString = "First Prize"
-                    }
-                    if (_item_mark == 5 && _item_gs == 'group') {
-                      prizeString = "Second Prize"
-                    }
-                    if (_item_mark == 3 && _item_gs == 'group') {
-                      prizeString = "Third Prize"
-                    }
-
-
-                    if (_item_mark == 5 && _item_gs == 'solo') {
-                      prizeString = "First"
-                    }
-                    if (_item_mark == 3 && _item_gs == 'solo') {
-                      prizeString = "Second"
-                    }
-                    if (_item_mark == 1 && _item_gs == 'solo') {
-                      prizeString = "Third"
-                    }
-                    console.log(prizeString)
-                    descriptionString = prizeString + " prize in " + _item_name
-                    console.log(descriptionString)
-                    descriptionList.push(descriptionString)
+              if (dataList[i].marks) {
+                var markItem = dataList[i].marks;
+                for (var j = 0; j < markItem.length; j++) {
+                  itemDoneList.push(markItem[j].itemname)
+                }
+              }
+              if ((itemList.length - itemDoneList.length) == 0) {
+                var newObj = {
+                  chestno: dataList[i].chessno[0],
+                  itemnameRegistered: itemList,
+                  itemnameDone: itemDoneList,
+                  doneCount: itemDoneList.length,
+                  remainingCount: (itemList.length - itemDoneList.length),
+                  eCompleted: "Evaluation Completed",
+                }
+              } else {
+                if (dataList[i].attendedEventStatus) {
+                  var newObj = {
+                    chestno: dataList[i].chessno[0],
+                    itemnameRegistered: itemList,
+                    itemnameDone: itemDoneList,
+                    doneCount: itemDoneList.length,
+                    remainingCount: (itemList.length - itemDoneList.length),
+                    attendEventStatus: "yes",
 
                   }
-                  console.log(descriptionList)
-                  var finalString=descriptionList.join()
-                  console.log(finalString)
-                  judgeFunctions.pushWinnerDescription(chestno,finalString).then((data)=>{
-                    console.log(data)
-                    console.log("updated winner description")
+                } else {
+                  var newObj = {
+                    chestno: dataList[i].chessno[0],
+                    itemnameRegistered: itemList,
+                    itemnameDone: itemDoneList,
+                    doneCount: itemDoneList.length,
+                    remainingCount: (itemList.length - itemDoneList.length),
+
+                  }
+                }
+              }
+
+
+              newList.push(newObj)
+              console.log(newList)
+            }
+            var disable_chest = "yes"
+            var Err = "Evaluation already done"
+            var newListLength = newList.length;
+            var count = 0
+            for (var i = 0; i < newList.length; i++) {
+              if (newList[i].eCompleted) {
+                count = count + 1
+              }
+            }
+            console.log(count)
+            var percent = (count / newListLength) * 100
+            console.log(percent)
+            var remaining = newListLength - count
+            res.render('judge/judge', { Err, disable_chest, newList, newListLength, remaining,percent });
+          })
+
+        } else {
+          judgeFunctions.addMarks(chestno, req.body, userGS, item_type, item_subtype).then((data) => {
+            judgeFunctions.pushItemPostions(req.body).then((d) => {
+              if (data) {
+                var disable_chest = "yes"
+                var done = "Evaluation Completed"
+                judgeFunctions.getWinnerData(chestno).then((winner_d) => {
+                  console.log("----------------------------------------------")
+                  var winnerDescription = winner_d.description
+                  judgeFunctions.checkUserChest(chestno).then((registerDetails) => {
+
+                    var descriptionList = []
+                    var descriptionString = '';
+                    var prizeString = '';
+
+                    var mark_List = registerDetails.marks
+                    console.log("its here")
+                    console.log(mark_List)
+                    for (var i = 0; i < mark_List.length; i++) {
+
+                      var _item_name = mark_List[i].itemname
+                      var _item_gs = mark_List[i].grouporsolo
+                      var _item_mark = mark_List[i].mark
+                      if (_item_mark == 10 && _item_gs == 'group') {
+                        prizeString = "First Prize"
+                      }
+                      if (_item_mark == 5 && _item_gs == 'group') {
+                        prizeString = "Second Prize"
+                      }
+                      if (_item_mark == 3 && _item_gs == 'group') {
+                        prizeString = "Third Prize"
+                      }
+
+
+                      if (_item_mark == 5 && _item_gs == 'solo') {
+                        prizeString = "First"
+                      }
+                      if (_item_mark == 3 && _item_gs == 'solo') {
+                        prizeString = "Second"
+                      }
+                      if (_item_mark == 1 && _item_gs == 'solo') {
+                        prizeString = "Third"
+                      }
+                      console.log(prizeString)
+                      descriptionString = prizeString + " prize in " + _item_name
+                      console.log(descriptionString)
+                      descriptionList.push(descriptionString)
+
+                    }
+                    console.log(descriptionList)
+                    var finalString = descriptionList.join()
+                    console.log(finalString)
+                    judgeFunctions.pushWinnerDescription(chestno, finalString).then((data) => {
+                      console.log(data)
+                      console.log("updated winner description")
+                    })
+
                   })
 
                 })
 
-              })
+
+                eventFunctions.getAllRegisteredDetails().then((dataList) => {
+                  var newList = []
+                  var itemList = [];
+                  console.log(dataList)
+                  for (var i = 0; i < dataList.length; i++) {
+
+                    if (Array.isArray(dataList[i].itemname) == false) {
+
+                      itemList.push(dataList[i].itemname)
+                    } else {
+                      itemList = dataList[i].itemname
+                    }
+                    console.log(itemList)
+
+                    var itemDoneList = []
+                    if (dataList[i].marks) {
+                      var markItem = dataList[i].marks;
+                      for (var j = 0; j < markItem.length; j++) {
+                        itemDoneList.push(markItem[j].itemname)
+                      }
+                    }
 
 
+                    if ((itemList.length - itemDoneList.length) == 0) {
+                      var newObj = {
+                        chestno: dataList[i].chessno[0],
+                        itemnameRegistered: itemList,
+                        itemnameDone: itemDoneList,
+                        doneCount: itemDoneList.length,
+                        remainingCount: (itemList.length - itemDoneList.length),
+                        eCompleted: "Evaluation Completed",
+                      }
+                    } else {
+                      if (dataList[i].attendedEventStatus) {
+                        var newObj = {
+                          chestno: dataList[i].chessno[0],
+                          itemnameRegistered: itemList,
+                          itemnameDone: itemDoneList,
+                          doneCount: itemDoneList.length,
+                          remainingCount: (itemList.length - itemDoneList.length),
+                          attendEventStatus: "yes",
 
-              res.render('judge/judge', { done, disable_chest })
-            }
+                        }
+                      } else {
+                        var newObj = {
+                          chestno: dataList[i].chessno[0],
+                          itemnameRegistered: itemList,
+                          itemnameDone: itemDoneList,
+                          doneCount: itemDoneList.length,
+                          remainingCount: (itemList.length - itemDoneList.length),
+
+                        }
+                      }
+                    }
+
+
+                    newList.push(newObj)
+                    console.log(newList)
+                  }
+                  var newListLength = newList.length;
+                  var count = 0
+                  for (var i = 0; i < newList.length; i++) {
+                    if (newList[i].eCompleted) {
+                      count = count + 1
+                    }
+                  }
+                  console.log(count)
+                  var percent = (count / newListLength) * 100
+                  console.log(percent)
+                  var remaining = newListLength - count
+
+                  res.render('judge/judge', { done, disable_chest, newList, newListLength, remaining,percent });
+                })
+
+              }
+            })
+
 
           })
         }
       } else {
 
-        judgeFunctions.addMarks(chestno, req.body, userGS,item_type,item_subtype).then((data) => {
+        judgeFunctions.addMarks(chestno, req.body, userGS, item_type, item_subtype).then((data) => {
 
-          if (data) {
-            var disable_chest = "yes"
-            var done = "Evaluation Completed"
+          judgeFunctions.pushItemPostions(req.body).then((da) => {
 
-            res.render('judge/judge', { done, disable_chest })
+            if (data) {
+              var disable_chest = "yes"
+              var done = "Evaluation Completed"
 
-            judgeFunctions.checkUserChest(chestno).then((registeredData) => {
-              var descriptionList = []
-              var descriptionString = '';
-              var prizeString = '';
+              eventFunctions.getAllRegisteredDetails().then((dataList) => {
+                var newList = []
+                var itemList = [];
+                console.log(dataList)
+                for (var i = 0; i < dataList.length; i++) {
 
-              var mark_List = registeredData.marks
-              console.log("its here")
-              console.log(mark_List)
-              for (var i = 0; i < mark_List.length; i++) {
-                var _item_name = mark_List[i].itemname
-                var _item_gs = mark_List[i].grouporsolo
-                var _item_mark = mark_List[i].mark
-                if (_item_mark == 10 && _item_gs == 'group') {
-                  prizeString = "First Prize"
+                  if (Array.isArray(dataList[i].itemname) == false) {
+
+                    itemList.push(dataList[i].itemname)
+                  } else {
+                    itemList = dataList[i].itemname
+                  }
+                  console.log(itemList)
+
+                  var itemDoneList = []
+                  if (dataList[i].marks) {
+                    var markItem = dataList[i].marks;
+                    for (var j = 0; j < markItem.length; j++) {
+                      itemDoneList.push(markItem[j].itemname)
+                    }
+                  }
+
+
+                  if ((itemList.length - itemDoneList.length) == 0) {
+                    var newObj = {
+                      chestno: dataList[i].chessno[0],
+                      itemnameRegistered: itemList,
+                      itemnameDone: itemDoneList,
+                      doneCount: itemDoneList.length,
+                      remainingCount: (itemList.length - itemDoneList.length),
+                      eCompleted: "Evaluation Completed",
+                    }
+                  } else {
+                    if (dataList[i].attendedEventStatus) {
+                      var newObj = {
+                        chestno: dataList[i].chessno[0],
+                        itemnameRegistered: itemList,
+                        itemnameDone: itemDoneList,
+                        doneCount: itemDoneList.length,
+                        remainingCount: (itemList.length - itemDoneList.length),
+                        attendEventStatus: "yes",
+
+                      }
+                    } else {
+                      var newObj = {
+                        chestno: dataList[i].chessno[0],
+                        itemnameRegistered: itemList,
+                        itemnameDone: itemDoneList,
+                        doneCount: itemDoneList.length,
+                        remainingCount: (itemList.length - itemDoneList.length),
+
+                      }
+                    }
+                  }
+
+
+                  newList.push(newObj)
+                  console.log(newList)
                 }
-                if (_item_mark == 5 && _item_gs == 'group') {
-                  prizeString = "Second Prize"
+                var newListLength = newList.length;
+                var count = 0
+                for (var i = 0; i < newList.length; i++) {
+                  if (newList[i].eCompleted) {
+                    count = count + 1
+                  }
                 }
-                if (_item_mark == 3 && _item_gs == 'group') {
-                  prizeString = "Third Prize"
-                }
+                console.log(count)
+                var percent = (count / newListLength) * 100
+                console.log(percent)
+                var remaining = newListLength - count
 
-
-                if (_item_mark == 5 && _item_gs == 'solo') {
-                  prizeString = "First"
-                }
-                if (_item_mark == 3 && _item_gs == 'solo') {
-                  prizeString = "Second"
-                }
-                if (_item_mark == 1 && _item_gs == 'solo') {
-                  prizeString = "Third"
-                }
-                console.log(prizeString)
-                descriptionString = prizeString + " prize in " + _item_name
-                console.log(descriptionString)
-                descriptionList.push(descriptionString)
-
-              }
-              console.log(descriptionList)
-
-
-              console.log(descriptionList[0])
-
-              var winner_Obj = {
-                "name": registeredData.name,
-                "email":registeredData.email,
-                "department": registeredData.department,
-                "semester": registeredData.semester,
-                "chessno": chestno,
-                "image_":"pending",
-                "description": descriptionList[0],
-              }
-
-              eventFunctions.addWinner(winner_Obj).then((_data__) => {
-
-                if (_data__) {
-                  console.log("new winner added to winner collection but photo is not uploaded")
-                }
+                res.render('judge/judge', { done, disable_chest, newList, newListLength, remaining,percent});
               })
 
-            })
+
+              judgeFunctions.checkUserChest(chestno).then((registeredData) => {
+                var descriptionList = []
+                var descriptionString = '';
+                var prizeString = '';
+
+                var mark_List = registeredData.marks
+                console.log("its here")
+                console.log(mark_List)
+                for (var i = 0; i < mark_List.length; i++) {
+                  var _item_name = mark_List[i].itemname
+                  var _item_gs = mark_List[i].grouporsolo
+                  var _item_mark = mark_List[i].mark
+                  if (_item_mark == 10 && _item_gs == 'group') {
+                    prizeString = "First Prize"
+                  }
+                  if (_item_mark == 5 && _item_gs == 'group') {
+                    prizeString = "Second Prize"
+                  }
+                  if (_item_mark == 3 && _item_gs == 'group') {
+                    prizeString = "Third Prize"
+                  }
 
 
-          }
+                  if (_item_mark == 5 && _item_gs == 'solo') {
+                    prizeString = "First"
+                  }
+                  if (_item_mark == 3 && _item_gs == 'solo') {
+                    prizeString = "Second"
+                  }
+                  if (_item_mark == 1 && _item_gs == 'solo') {
+                    prizeString = "Third"
+                  }
+                  console.log(prizeString)
+                  descriptionString = prizeString + " prize in " + _item_name
+                  console.log(descriptionString)
+                  descriptionList.push(descriptionString)
+
+                }
+                console.log(descriptionList)
+
+
+                console.log(descriptionList[0])
+
+                var winner_Obj = {
+                  "name": registeredData.name,
+                  "email": registeredData.email,
+                  "department": registeredData.department,
+                  "semester": registeredData.semester,
+                  "chessno": chestno,
+                  "image_": "pending",
+                  "description": descriptionList[0],
+                }
+
+                eventFunctions.addWinner(winner_Obj).then((_data__) => {
+
+                  if (_data__) {
+                    console.log("new winner added to winner collection but photo is not uploaded")
+                  }
+                })
+
+              })
+
+
+            }
+
+          })
+
 
         })
       }
