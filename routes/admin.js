@@ -493,7 +493,7 @@ router.get("/generateReport", (req, res) => {
       }
       console.log("-----------------new list--------------------")
       console.log(new_finalList)
-
+      
       for (var k = 0; k < new_finalList.length; k++) {
         console.log("call is here")
 
@@ -504,14 +504,24 @@ router.get("/generateReport", (req, res) => {
         var item_name = new_finalList[k].itemname
         var position_ = new_finalList[k].position
         var email_ = new_finalList[k].email
+        
 
 
-        ejs.renderFile(path.join(__dirname, './pdf-template/', "report-template.ejs"), { name_, department_, semester_, chestno_, item_name, position_ }, (err, data) => {
+        ejs.renderFile(path.join(__dirname, './pdf-template/', "report-template.ejs"), {name:name_,
+          department:department_,
+          semester:semester_,
+          chestno:chestno_,
+          itemname:item_name,
+          position:position_,
+          email:email_,}, (err, data) => {
 
           if (err) {
             //res.send(err);
             console.log(err)
           } else {
+            
+            console.log("-----data------------")
+            console.log(data)
             let options = {
               "height": "12.0in",
               "width": "9.0in",
@@ -521,39 +531,49 @@ router.get("/generateReport", (req, res) => {
               "footer": {
                 "height": "20mm",
               },
-
+      
             };
-
-            pdf.create(data, options).toFile('./certificates/' + email_ + "/" + item_name + chestno_.toString() + '.pdf', function (err, data) {
+            
+            // './certificates/' + email_ + "/" + item_name + chestno_.toString() + '.pdf',
+            pdf.create(data, options).toBuffer( function (err, buffer) {
               if (err) {
                 //res.send(err);
                 console.log(err)
               } else {
-                //res.send((i-1).toString()+" File created successfully ");
-                console.log((k).toString() + "File successfully created " + name_ + item_name)
                 
-
-
+                console.log(Buffer.isBuffer(buffer))
+                console.log(buffer)
+                var tempBufferObj={
+                  chestno:chestno_,
+                  itemname:item_name,
+                  email:email_,
+                  buffer:buffer,
+                }
+                
+                judgeFunctions.insertWinnerCertificates(tempBufferObj).then((h)=>{
+                  console.log(h)
+                  console.log("inserted")
+                  
+                      
+                })
+      
+      
               }
             });
 
           }
 
         });
-
+       
 
 
       }
-
+      
+      
 
     })
 
-
-
-
-
   })
-
 
 })
 

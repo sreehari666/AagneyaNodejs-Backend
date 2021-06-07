@@ -331,7 +331,46 @@ module.exports={
 
             })
         })
+    },
+    insertWinnerCertificates:(bufferObj)=>{
+        return new Promise(async (resolve, reject) => {
+             
+            db.get().collection('winner-certificates').insertOne(bufferObj).then((data) => {
+            
+              resolve(data.ops[0]._id)
+
+             })
+     
+
+        })
+        // console.log(bufferList)
+        
+        // var setObj = new Set(); // create key value pair from array of array
+
+        // var uniqueBufferList = bufferList.reduce((acc,item)=>{
+        // if(!setObj.has(item.chestno)){
+        //     setObj.add(item.chestno,item)
+        //     acc.push(item)
+        // }
+        // return acc;
+        // },[]);
+        // console.log("-----unique list-----")
+        // console.log(uniqueBufferList)
+        // for(var i=0;i<uniqueBufferList.length;i++){
+        //     return new Promise(async (resolve, reject) => {
+             
+        //         db.get().collection('winner-certificates').insertOne(uniqueBufferList[i]).then((data) => {
+                
+        //           resolve(data.ops[0]._id)
+    
+        //          })
+         
+    
+        //     })
+        // }
+        
     }
+
 
 
     
