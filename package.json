@@ -38,6 +38,7 @@
     "package.json": "^2.0.1",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
-    "pug": "^3.0.2"
+    "pug": "^3.0.2",
+    "rimraf": "^3.0.2"
   }
 }

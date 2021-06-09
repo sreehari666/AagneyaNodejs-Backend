@@ -8,6 +8,7 @@ let ejs = require("ejs");
 let pdf = require("html-pdf");
 let path = require("path");
 const fs = require('fs')
+var rimraf = require('rimraf')
 
 const Cryptr = require('cryptr');
 const cryptr = new Cryptr('myTotalySecretKey');
@@ -68,8 +69,26 @@ router.get('/admin-logout', (req, res) => {
 /* GET users listing. */
 router.get('/', verifyLogin, function (req, res, next) {
   eventFunctions.getAllEvents().then((eventDetails) => {
-    console.log(eventDetails)
-    res.render('admin/admin-panel', { eventDetails })
+    eventFunctions.getAllItems().then((items)=>{
+      console.log(eventDetails)
+      var gList=[]
+      for(var i=0;i<items.length;i++){
+        if(items[i].firstPrizeStatus == 1 || items[i].secondPrizeStatus == 1 || items[i].thirdPrizeStatus == 1){
+            gList.push(items[i].itemname)
+        }
+      }
+      console.log(items.length)
+      console.log(gList.length)
+      if(items.length == gList.length){
+        var certificateStatus="yes"
+        res.render('admin/admin-panel', { eventDetails,certificateStatus })
+      }else{
+        res.render('admin/admin-panel', { eventDetails})
+      }
+      console.log(items)
+     
+    })
+    
   })
 
 
@@ -178,7 +197,7 @@ router.post('/edit-event/:id', function (req, res) {
   })
 
 })
-router.get('/edit-item/:id',function (req, res) {
+router.get('/edit-item/:id', function (req, res) {
   console.log(req.params.id)
   eventFunctions.getItem(req.params.id).then((data) => {
     console.log(data)
@@ -402,12 +421,12 @@ router.post('/judge-signup', function (req, res) {
 
   console.log(decryptPassword)
 
-  var signObj={
-    name:req.body.name,
-    email:req.body.email,
-    password:req.body.password,
-    REpassword:encryptedPassword,
-    
+  var signObj = {
+    name: req.body.name,
+    email: req.body.email,
+    password: req.body.password,
+    REpassword: encryptedPassword,
+
   }
   judgeFunctions.doSignup(signObj).then((response) => {
     req.session.judge = response
@@ -418,21 +437,21 @@ router.post('/judge-signup', function (req, res) {
 })
 router.get('/view-judges', function (req, res) {
   judgeFunctions.getJudges().then((response) => {
-    var newList=[]
+    var newList = []
     console.log(response)
     console.log(response[0].REpassword)
-    
-    
-    for(var i=0;i<response.length;i++){
-      var pass=cryptr.decrypt(response[i].REpassword)
-      var listObj={
-        name:response[i].name,
-        email:response[i].email,
-        password:pass,
+
+
+    for (var i = 0; i < response.length; i++) {
+      var pass = cryptr.decrypt(response[i].REpassword)
+      var listObj = {
+        name: response[i].name,
+        email: response[i].email,
+        password: pass,
       }
       newList.push(listObj)
     }
-    res.render('admin/view-judges', { newList})
+    res.render('admin/view-judges', { newList })
   })
 
 })
@@ -444,10 +463,14 @@ router.get("/generateReport", (req, res) => {
 
   eventFunctions.getAllRegisteredDetails().then((registerDetails_) => {
 
+    
+   
+    var emailList = fs.readdirSync('./certificates')
+    console.log("----------------generate report---------------------")
+    console.log(emailList)
+    
+    console.log(registerDetails_)
     var _length = registerDetails_.length
-
-
-
     for (var i = 0; i < _length; i++) {
 
       var markList_ = registerDetails_[i].marks
@@ -456,13 +479,6 @@ router.get("/generateReport", (req, res) => {
         for (var j = 0; j < markList_.length; j++) {
           var position_ = markList_[j].position
           var item_name = markList_[j].itemname
-
-
-
-          console.log(registerDetails_[i])
-          console.log(registerDetails_.length)
-          console.log("count")
-          console.log(i)
 
           var stdObj = {
             "name": registerDetails_[i].name,
@@ -475,7 +491,8 @@ router.get("/generateReport", (req, res) => {
 
           }
           final_studentList.push(stdObj)
-
+          
+          console.log(final_studentList)
         }
 
 
@@ -493,7 +510,7 @@ router.get("/generateReport", (req, res) => {
       }
       console.log("-----------------new list--------------------")
       console.log(new_finalList)
-      
+      var sum_ = 0;
       for (var k = 0; k < new_finalList.length; k++) {
         console.log("call is here")
 
@@ -504,24 +521,26 @@ router.get("/generateReport", (req, res) => {
         var item_name = new_finalList[k].itemname
         var position_ = new_finalList[k].position
         var email_ = new_finalList[k].email
-        
 
 
-        ejs.renderFile(path.join(__dirname, './pdf-template/', "report-template.ejs"), {name:name_,
-          department:department_,
-          semester:semester_,
-          chestno:chestno_,
-          itemname:item_name,
-          position:position_,
-          email:email_,}, (err, data) => {
+
+        ejs.renderFile(path.join(__dirname, './pdf-template/', "report-template.ejs"), {
+          name: name_,
+          department: department_,
+          semester: semester_,
+          chestno: chestno_,
+          itemname: item_name,
+          position: position_,
+          email: email_,
+        }, (err, data) => {
 
           if (err) {
             //res.send(err);
             console.log(err)
           } else {
-            
+
             console.log("-----data------------")
-            console.log(data)
+
             let options = {
               "height": "12.0in",
               "width": "9.0in",
@@ -531,52 +550,91 @@ router.get("/generateReport", (req, res) => {
               "footer": {
                 "height": "20mm",
               },
-      
+
             };
-            
+
             // './certificates/' + email_ + "/" + item_name + chestno_.toString() + '.pdf',
-            pdf.create(data, options).toBuffer( function (err, buffer) {
+            pdf.create(data, options).toFile('./certificates/' + email_ + "/" + item_name +"&"+ chestno_.toString() + '.pdf', function (err, data_) {
               if (err) {
                 //res.send(err);
                 console.log(err)
               } else {
-                
-                console.log(Buffer.isBuffer(buffer))
-                console.log(buffer)
-                var tempBufferObj={
-                  chestno:chestno_,
-                  itemname:item_name,
-                  email:email_,
-                  buffer:buffer,
+                console.log(data_)
+
+                if (data_) {
+                  sum_ = sum_ + 1
                 }
-                
-                judgeFunctions.insertWinnerCertificates(tempBufferObj).then((h)=>{
-                  console.log(h)
-                  console.log("inserted")
-                  
-                      
-                })
-      
-      
+                console.log(sum_)
+                if (new_finalList.length == sum_) {
+                  res.redirect("/admin/upload-certificates")
+                }
+
+
               }
             });
 
           }
 
         });
-       
+
 
 
       }
-      
-      
+
+
 
     })
 
   })
 
 })
+router.get('/upload-certificates', (req, res) => {
+  // judgeFunctions.removeAllWinnerCertificates()
+  var data = fs.readdirSync('./certificates')
+  console.log(data)
 
+  let bufferList = []
+  for (var k = 0; k < data.length; k++) {
+    var tempList = fs.readdirSync('./certificates/' + data[k])
+    for (var m = 0; m < tempList.length; m++) {
+
+      var fileObj = {
+        email: data[k],
+        filename:tempList[m],
+        buffer: Buffer.from('./certificates/' + data[k] + '/' + tempList[m]),
+      }
+      bufferList.push(fileObj)
+    }
+  }
+  console.log(bufferList)
+  var tempCheckList=[]
+  judgeFunctions.removeAllWinnerCertificates().then((rm)=>{
+    
+    for (var i = 0; i < bufferList.length; i++) {
+      var bufferLength=bufferList.length
+      console.log("buffer length" + bufferLength)
+      
+        judgeFunctions.insertWinnerCertificates(bufferList[i]).then((d) => {
+        
+          console.log(d)
+          tempCheckList.push(d)
+               console.log(fs.readdirSync('./certificates/' + d + '/'))
+               console.log("d len")
+               console.log(tempCheckList.length)
+               console.log(bufferLength)
+               if(tempCheckList.length==bufferLength){
+                res.redirect('/admin/sent-certificates')
+               }
+               
+        })
+      
+      
+    }
+  })
+  
+
+
+})
 
 
 router.get('/sent-certificates', (req, res) => {
@@ -588,22 +646,22 @@ router.get('/sent-certificates', (req, res) => {
   console.log(fs.readdirSync('./certificates/' + data[0]))
 
   let users = []
-  for(var i=0;i<data.length;i++){
+  for (var i = 0; i < data.length; i++) {
     console.log(data[i])
     console.log(fs.readdirSync('./certificates/' + data[i]))
-    var tempList=fs.readdirSync('./certificates/' + data[i])
-    for(var j=0;j<tempList.length;j++){
+    var tempList = fs.readdirSync('./certificates/' + data[i])
+    for (var j = 0; j < tempList.length; j++) {
       console.log("----------")
       console.log(data[i])
       console.log(tempList[j])
       console.log("----------")
-      emailObj={
-        email:data[i],
-        attachment:tempList[j],
+      emailObj = {
+        email: data[i],
+        attachment: tempList[j],
       }
       users.push(emailObj)
     }
-    
+
   }
   console.log(users)
 
@@ -625,57 +683,57 @@ router.get('/sent-certificates', (req, res) => {
       });
     }));
   }
-  
-
- 
-
-  function sendEmail(obj) {
-    return transporter.sendMail(obj);
-  }
-
-  function loadTemplate(templateName, contexts) {
-    let template = new EmailTemplate(path.join(__dirname, 'templates', templateName));
-    return Promise.all(contexts.map((context) => {
-      return new Promise((resolve, reject) => {
-        template.render(context, (err, result) => {
-          if (err) reject(err);
-          else resolve({
-            email: result,
-            context,
-          });
-        });
-      });
-    }));
-  }
-  
 
   loadTemplate('certificate-template', users).then((results) => {
     return Promise.all(results.map((result) => {
       sendEmail({
         to: result.context.email,
-        from: 'Team Aagneya :)',
+        from: 'Team Athene Arts :)',
         subject: result.email.subject,
         html: result.email.html,
         text: result.email.text,
         attachments: [
           {
-              filename: result.context.attachment, // <= Here: made sure file name match
-              path: path.join(__dirname, '../certificates/'+result.context.email+'/'+result.context.attachment), // <= Here
-              contentType: 'application/pdf'
+            filename: result.context.attachment, // <= Here: made sure file name match
+            path: path.join(__dirname, '../certificates/' + result.context.email + '/' + result.context.attachment), // <= Here
+            contentType: 'application/pdf'
           }
-      ]
-        
+        ]
+
       });
     }));
   }).then((data) => {
-    console.log(data)
+    console.log("----------after sending emails-------------")
+    console.log(data.length)
+    console.log(data[0])
     console.log('Winner email successfully sent');
-    res.redirect('/admin')
+    if(data){
+      res.redirect('/admin')
+    }
+    
   });
 
 
 })
+router.get('/delete-winner-certificate',(req,res)=>{
 
+    // var emails = fs.readdirSync('./certificates')
+    // var files;
+    //   for(var j=0;j<emails.length;j++){
+    //     console.log(fs.readdirSync('./certificates/' + emails[j] + '/'))
+ 
+    //     files=fs.readdirSync('./certificates/' + emails[j] + '/')
+    //    for(var i=0;i<files.length;i++){
+    //      fs.unlink('./certificates/' + emails[j] + '/'+files[i], function (err) {
+    //        if (err) {
+    //          return console.error(err);
+    //        }
+    //        console.log('successfully deleted');
+  
+    //      });
+    //    }
+    //   }
+})
 
 
 module.exports = router;

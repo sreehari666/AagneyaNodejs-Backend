@@ -89,9 +89,6 @@ router.get('/app-get-winner', function (req, res) {
 
         shuffledArray = data.sort((a, b) => 0.5 - Math.random());
 
-
-
-
         res.send(shuffledArray)
       })
 
@@ -99,8 +96,8 @@ router.get('/app-get-winner', function (req, res) {
       var winnerList = []
       var winnerObj = {
         _id: 'default_landing_image',
-        name: 'Welcome to Aagneya',
-        department: ' ',
+        name: 'Welcome',
+        department: 'Athene Arts',
         semester: ' ',
         description: 'From IES College of Engineering'
 
