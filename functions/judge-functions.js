@@ -332,6 +332,16 @@ module.exports={
             })
         })
     },
+    pushAttendedItems:(chestno,items)=>{
+        return new Promise(async (resolve, reject) => {
+
+            db.get().collection('registered').updateOne({chessno:chestno},{$push:{attendedEvent:items}}).then((data) => {
+
+                resolve(data)
+
+            })
+        })
+    },
     insertWinnerCertificates:(bufferObj)=>{
         return new Promise(async (resolve, reject) => {
              

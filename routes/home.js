@@ -78,6 +78,7 @@ router.get('/app-winner-stop-announce', function (req, res) {
 router.get('/app-get-winner', function (req, res) {
 
   judgeFunctions.getAnnounceWinner().then((A_winner) => {
+
     console.log(A_winner.winners)
     if (A_winner.winners == true) {
 
@@ -140,6 +141,7 @@ router.get('/app-close-registration', function (req, res) {
 router.get('/app-event-register/:id', function (req, res) {
 
   judgeFunctions.get_oc_registration().then((data) => {
+
     if (data.registration == true) {
 
       console.log(req.params.id)
@@ -187,6 +189,9 @@ router.get('/app-event-register/:id', function (req, res) {
 })
 
 //kalaprathibha
+
+
+
 router.get('/app-find-kalaprathibha', (req, res) => {
   var awardList_final = []
   eventFunctions.getAllRegisteredDetails().then((R_data) => {
@@ -1301,6 +1306,68 @@ router.post('/register-for-events/:id', function (req, res) {
     }
 
   })
+
+})
+//upload entries from user
+router.get('/app-upload-entries/:id',(req,res)=>{
+
+  eventFunctions.getRegisteredDetails(req.params.id).then((k)=>{
+    var items=[]
+    var items_list=[]
+    if(Array.isArray(k.itemname) == false){
+      items.push(k.itemname)
+    }else{
+      items=k.itemname
+    }
+    sum=0
+    for(var i=0;i<items.length;i++){
+      judgeFunctions.getGroup_or_Solo(items[i]).then((m)=>{
+        sum=sum+1
+        console.log("sum")
+        console.log(sum)
+        if(m.subtype == "drawing" || m.subtype == "literature" || m.subtype == "craft"){
+          var obj_={
+            itemname:m.itemname,
+            time:m.time,
+            date:m.date,
+            duration:m.duration,
+          }
+          items_list.push(obj_)
+          // console.log(items_list)
+        }
+        if(sum==items.length){
+          var today = new Date();
+          var dd = String(today.getDate()).padStart(2, '0');
+          var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+          var yyyy = today.getFullYear();
+          var timeNow=String(today.getHours)+':'+String(today.getMinutes)
+          var todayDate = yyyy + '-' + mm + '-' + dd;
+          console.log(todayDate)
+          var final_list=[]
+          for(var j=0;j<items_list.length;j++){
+            if(items_list[j].date == todayDate && items_list[j].time == timeNow){
+              var finalObj={
+                itemname:items_list[j].itemname,
+                time:items_list[j].time,
+                date:items_list[j].date,
+                duration:items[j].duration,
+              }
+              final_list.push(finalObj)
+            }
+          }
+          console.log(items_list)
+          console.log("time list")
+          console.log(final_list)
+          res.send({items_list,final_list})
+        }
+      })
+    }
+
+  })
+
+})
+
+router.post('/app-upload-entries-post',(req,res)=>{
 
 })
 

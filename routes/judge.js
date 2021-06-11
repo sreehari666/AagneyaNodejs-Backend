@@ -71,7 +71,7 @@ router.get('/', verifyLoginJudge, function (req, res, next) {
         }
       }
 
-
+      
       newList.push(newObj)
       console.log(newList)
     }
@@ -87,7 +87,8 @@ router.get('/', verifyLoginJudge, function (req, res, next) {
     var percent = (count / newListLength) * 100
     console.log(percent)
     var remaining = newListLength - count
-    res.render('judge/judge', { disable_chest, newList, newListLength, remaining, percent });
+    console.log(itemList)
+    res.render('judge/judge', { disable_chest, newList,itemList, newListLength, remaining, percent });
   })
 
 
@@ -125,19 +126,42 @@ router.get('/judge-logout', (req, res) => {
   res.redirect('/judge')
 })
 
-router.get('/event_attended/:chestno/:data/', (req, res) => {
+router.get('/event_attended/:chestno/:data', (req, res) => {
+  
   console.log(req.params.chestno)
   console.log(req.params.data)
-  if (req.params.data == "yes") {
-    judgeFunctions.pushAttendStatus([Number(req.params.chestno)]).then((d) => {
-      res.redirect('/judge')
-    })
-  } else {
-    res.redirect('/judge')
-  }
+  console.log(req.params.items)
+  var chestno=req.params.chestno
+  judgeFunctions.checkUserChest(req.params.chestno).then((r)=>{
+    var item_list=r.itemname
+    console.log(r)
+    res.render('judge/item-select',{item_list,chestno})
+  })
+  
 
 })
-
+router.post('/add-attended',(req,res)=>{
+  console.log(req.body)
+  var chest=Number(req.body.chestno)
+  var chestL=[]
+  chestL.push(chest)
+  var itemArray=[]
+  
+  if(Array.isArray(req.body.itemname) == false){
+    itemArray.push(req.body.itemname)
+  }else{
+    itemArray=req.body.itemname
+  }
+  console.log(itemArray)
+  judgeFunctions.pushAttendStatus(chestL).then((k)=>{
+    
+      judgeFunctions.pushAttendedItems(chestL,itemArray).then((p)=>{
+        res.redirect('/judge')
+      })
+    
+    
+  })
+})
 
 
 router.post('/add_marks', verifyLoginJudge, (req, res) => {
@@ -260,7 +284,7 @@ router.post('/add_marks', verifyLoginJudge, (req, res) => {
           var percent = (count / newListLength) * 100
           console.log(percent)
           var remaining = newListLength - count
-          res.render('judge/judge', { Err, disable_chest, newList, newListLength, remaining,percent });
+          res.render('judge/judge', { Err, disable_chest,itemList, newList, newListLength, remaining,percent });
         })
 
 
@@ -358,7 +382,7 @@ router.post('/add_marks', verifyLoginJudge, (req, res) => {
             var percent = (count / newListLength) * 100
             console.log(percent)
             var remaining = newListLength - count
-            res.render('judge/judge', { Err, disable_chest, newList, newListLength, remaining,percent });
+            res.render('judge/judge', { Err, disable_chest,itemList, newList, newListLength, remaining,percent });
           })
 
         } else {
@@ -494,7 +518,7 @@ router.post('/add_marks', verifyLoginJudge, (req, res) => {
                   console.log(percent)
                   var remaining = newListLength - count
 
-                  res.render('judge/judge', { done, disable_chest, newList, newListLength, remaining,percent });
+                  res.render('judge/judge', { done, disable_chest,itemList, newList, newListLength, remaining,percent });
                 })
 
               }
@@ -584,7 +608,7 @@ router.post('/add_marks', verifyLoginJudge, (req, res) => {
                 console.log(percent)
                 var remaining = newListLength - count
 
-                res.render('judge/judge', { done, disable_chest, newList, newListLength, remaining,percent});
+                res.render('judge/judge', { done, disable_chest,itemList, newList, newListLength, remaining,percent});
               })
 
 

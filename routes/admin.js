@@ -702,13 +702,13 @@ router.get('/sent-certificates', (req, res) => {
 
       });
     }));
-  }).then((data) => {
+  }).then(async(data) => {
     console.log("----------after sending emails-------------")
     console.log(data.length)
     console.log(data[0])
     console.log('Winner email successfully sent');
-    if(data){
-      res.redirect('/admin')
+    if(await data){
+      res.redirect('/admin/delete-winner-certificate')
     }
     
   });
@@ -716,6 +716,17 @@ router.get('/sent-certificates', (req, res) => {
 
 })
 router.get('/delete-winner-certificate',(req,res)=>{
+  // await rimraf("./certificates", function () { 
+  //   console.log("done"); 
+  //   fs.mkdir('./certificates', (err) => {
+  //     if (err) {
+  //         return console.error(err);
+  //     }
+  //     console.log('Directory created successfully!');
+  // });
+  // });
+  
+
 
     // var emails = fs.readdirSync('./certificates')
     // var files;
@@ -734,6 +745,170 @@ router.get('/delete-winner-certificate',(req,res)=>{
     //    }
     //   }
 })
+router.get('/generate-participation-certificates',(req,res)=>{
+  eventFunctions.getAllRegisteredDetails().then((data)=>{
+    console.log(data)
+    var userList=[]
+    for(var i=0;i<data.length;i++){
+      console.log(data[i].attendedEventStatus)
+      var attended_events=data[i].attendedEvent
+      
+      if(data[i].attendedEventStatus && attended_events && !data[i].marks){
+        
+        var obj={
+          name:data[i].name,
+          email:data[i].email,
+          department:data[i].department,
+          semester:data[i].semester,
+          chestno:data[i].chessno[0],
+          itemname:attended_events[0].join(),
+        }
+        console.log(obj)
+        userList.push(obj)
 
+      }
+    }
+    console.log(userList)
+    var sum_ = 0;
+    for(var j=0;j<userList.length;j++){
+      var name = userList[j].name
+        var department= userList[j].department
+        var semester= userList[j].semester
+        var chestno= userList[j].chestno
+        var itemname= userList[j].itemname
+        var email= userList[j].email
+
+      ejs.renderFile(path.join(__dirname, './pdf-template/', "participation-template.ejs"), {
+        name: name,
+        department: department,
+        semester: semester,
+        chestno: chestno,
+        itemname: itemname,
+        email: email,
+      }, (err, data) => {
+
+        if (err) {
+          //res.send(err);
+          console.log(err)
+        } else {
+
+          console.log("-----data------------")
+
+          let options = {
+            "height": "12.0in",
+            "width": "9.0in",
+            "header": {
+              "height": "20mm",
+            },
+            "footer": {
+              "height": "20mm",
+            },
+
+          };
+
+          // './certificates/' + email_ + "/" + item_name + chestno_.toString() + '.pdf',
+          pdf.create(data, options).toFile('./certificates-participation/' + email + "/" + itemname +"&"+ chestno + '.pdf', function (err, data_) {
+            if (err) {
+              
+              console.log(err)
+            } else {
+              console.log(data_)
+
+              if (data_) {
+                sum_ = sum_ + 1
+              }
+              console.log(sum_)
+              if (userList.length == sum_) {
+                res.redirect("/admin/sent-participation-certificates")
+              }
+
+
+            }
+          });
+
+        }
+
+      })
+    }
+  })
+})
+
+router.get('/sent-participation-certificates',(req,res)=>{
+    console.log("sending emails......")
+
+    var data = fs.readdirSync('./certificates-participation')
+
+    console.log(data)
+  
+    let users = []
+    for (var i = 0; i < data.length; i++) {
+      console.log(data[i])
+      console.log(fs.readdirSync('./certificates-participation/' + data[i]))
+      var tempList = fs.readdirSync('./certificates-participation/' + data[i])
+      for (var j = 0; j < tempList.length; j++) {
+       
+        emailObj = {
+          email: data[i],
+          attachment: tempList[j],
+        }
+        users.push(emailObj)
+      }
+  
+    }
+    console.log(users)
+  
+    function sendEmail(obj) {
+      return transporter.sendMail(obj);
+    }
+  
+    function loadTemplate(templateName, contexts) {
+      let template = new EmailTemplate(path.join(__dirname, 'templates', templateName));
+      return Promise.all(contexts.map((context) => {
+        return new Promise((resolve, reject) => {
+          template.render(context, (err, result) => {
+            if (err) reject(err);
+            else resolve({
+              email: result,
+              context,
+            });
+          });
+        });
+      }));
+    }
+  
+    loadTemplate('certificate-template', users).then((results) => {
+      return Promise.all(results.map((result) => {
+        sendEmail({
+          to: result.context.email,
+          from: 'Team Athene Arts :)',
+          subject: result.email.subject,
+          html: result.email.html,
+          text: result.email.text,
+          attachments: [
+            {
+              filename: result.context.attachment, // <= Here: made sure file name match
+              path: path.join(__dirname, '../certificates-participation/' + result.context.email + '/' + result.context.attachment), // <= Here
+              contentType: 'application/pdf'
+            }
+          ]
+  
+        });
+      }));
+    }).then(async(data) => {
+      console.log("----------after sending emails-------------")
+      console.log(data.length)
+      console.log(data[0])
+      console.log('Winner email successfully sent');
+      if(await data){
+        res.redirect('/admin')
+      }
+      
+    });
+
+
+
+
+
+})
 
 module.exports = router;

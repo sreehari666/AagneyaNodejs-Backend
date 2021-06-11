@@ -1,7 +1,7 @@
 <head>
  
   <link rel='stylesheet' href='/stylesheets/style.css' />
-
+  
 <div class="topnav">
   <a class="active" href="/">Admin Panel</a>
   <a href="admin/view-registered-students">View registered students</a>
@@ -61,11 +61,6 @@ tr:nth-child(even) {
   float: right;
 }
 
-
-</style>
-</head>
-<script type="text/javascript" src="https://code.jquery.com/jquery-1.8.2.js"></script>
-<style type="text/css">
 #overlay {
 position: fixed;
 top: 0;
@@ -124,7 +119,11 @@ width: 34px;
 .cnt223 .x:hover{
 cursor: pointer;
 }
+
+
 </style>
+</head>
+
 {{#if certificateStatus}}
 <script type='text/javascript'>
 $(function(){
@@ -137,9 +136,6 @@ $('.popup').hide();
 overlay.appendTo(document.body).remove();
 return false;
 });
-
-
- 
 
 $('.x').click(function(){
 $('.popup').hide();
@@ -164,7 +160,6 @@ Evaluation completed for all events
 
 
 <body>
-  
   
   
   
@@ -223,11 +218,11 @@ Evaluation completed for all events
 </a>
 </div>
 
-{{!-- <div class="button-column">
-<a href="/admin/sent-certificates">
-<button class="button" onclick="return confirm('Are you Sure to Send all Winner Certificates?')">Send all Winner Certificates</button><br><br>
+<div class="button-column">
+<a href="/admin/generate-participation-certificates">
+<button class="button" onclick="return confirm('Are you Sure to Generate and Send all Participation Certificates?')">Generate and Send Participation Certificates</button><br><br>
 </a>
-</div> --}}
+</div>
 
 <div>
 <div class="button-column">

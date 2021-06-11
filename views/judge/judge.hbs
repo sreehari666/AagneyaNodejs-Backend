@@ -90,7 +90,7 @@
           <br>
           <center><a href="/judge/judge-logout">Logout</a></center>
           <br>
-          <hr/>
+          <hr />
           {{!-- progress bar --}}
           <h2>Evaluation Status</h2>
           <br>
@@ -101,8 +101,8 @@
           <p>Total Students {{newListLength}}</p>
           <p>Remaining Evaluations {{remaining}}</p>
           {{!-- --------- --}}
-          
-          <hr/>
+
+          <hr />
           <br>
 
           <div class="table-responsive">
@@ -124,6 +124,7 @@
               <tbody>
                 {{#each newList}}
                 <tr>
+                  
                   <th scope="row">{{this.chestno}}</th>
                   <td>{{this.itemnameRegistered}}</td>
                   <td>{{this.itemnameDone}}</td>
@@ -136,11 +137,12 @@
                     {{#if this.attendEventStatus}}
                     yes
                     {{else}}
+                    
                     <a href="judge/event_attended/{{this.chestno}}/yes"><button type="button"
                         class="btn btn-success">Attended</button></a>
                     <br><br>
-                    <a href="judge/event_attended/{{this.chestno}}/no"><button type="button" class="btn btn-dark">Not
-                        Attended</button></a>
+                    {{!-- <a href="judge/event_attended/{{this.chestno}}/no"><button type="button" class="btn btn-dark">Not
+                        Attended</button></a> --}}
                     {{/if}}
                   </th>
                   {{/if}}
