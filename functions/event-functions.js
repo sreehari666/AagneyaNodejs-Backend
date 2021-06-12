@@ -272,6 +272,9 @@ module.exports = {
             db.get().collection(collection.ITEM_COLLECTION).updateOne({_id:ObjectId(itemId)},{
                 $set:{
                     itemname:itemDetails.itemname,
+                    time:itemDetails.time,
+                    date:itemDetails.date,
+                    duration:itemDetails.duration,
                     
                     
                 }

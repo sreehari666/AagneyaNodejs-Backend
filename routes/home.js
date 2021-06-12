@@ -1205,7 +1205,7 @@ router.post('/register-for-events/:id', function (req, res) {
                     return Promise.all(results.map((result) => {
                       sendEmail({
                         to: result.context.email,
-                        from: 'Team Aagneya :)',
+                        from: 'Team Athene Arts :)',
                         subject: result.email.subject,
                         html: result.email.html,
                         text: result.email.text,
@@ -1310,6 +1310,37 @@ router.post('/register-for-events/:id', function (req, res) {
 })
 //upload entries from user
 router.get('/app-upload-entries/:id',(req,res)=>{
+  function tConvert (time) {
+    // Check correct time format and split into components
+    time = time.toString ().match (/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
+  
+    if (time.length > 1) { // If time format correct
+      time = time.slice (1);  // Remove full string match value
+      time[5] = +time[0] < 12 ? ' AM' : ' PM'; // Set AM/PM
+      time[0] = +time[0] % 12 || 12; // Adjust hours
+    }
+    return time.join (''); // return adjusted time or original string
+  }
+  function timeToMins(time) {
+  var b = time.split(':');
+  return b[0]*60 + +b[1];
+}
+
+// Convert minutes to a time in format hh:mm
+// Returned value is in range 00  to 24 hrs
+function timeFromMins(mins) {
+  function z(n){return (n<10? '0':'') + n;}
+  var h = (mins/60 |0) % 24;
+  var m = mins % 60;
+  return z(h) + ':' + z(m);
+}
+
+// Add two times in hh:mm format
+function addTimes(t0, t1) {
+  return timeFromMins(timeToMins(t0) + timeToMins(t1));
+}
+  
+  
 
   eventFunctions.getRegisteredDetails(req.params.id).then((k)=>{
     var items=[]
@@ -1321,44 +1352,238 @@ router.get('/app-upload-entries/:id',(req,res)=>{
     }
     sum=0
     for(var i=0;i<items.length;i++){
+
+            
+
+
+
       judgeFunctions.getGroup_or_Solo(items[i]).then((m)=>{
+
+
+        var monthString_;
+        console.log(m.date)
+        var __date_=m.date.split("-")
+        var __time_=m.time +':00'
+
+        //get month
+        switch (Number(__date_[1])) {
+          case 1:
+            monthString_ = "January";
+            break;
+          case 2:
+            monthString_ = "February";
+            break;
+          case 3:
+            monthString_ = "March";
+            break;
+          case 4:
+            monthString_ = "April";
+            break;
+          case 5:
+            monthString_ = "May";
+            break;
+          case 6:
+            monthString_ = "June";
+            break;
+          case 7:
+            monthString_ = "July";
+            break;
+          case 8:
+            monthString_ = "August";
+            break;
+          case 9:
+            monthString_ = "September";
+            break;
+          case 10:
+            monthString_ = "October";
+            break;
+          case 11:
+            monthString_ = "November";
+            break;
+          case 12:
+            monthString_ = "December";
+            break;
+          default:
+            monthString_ = "Error";
+        }
+        var dateString_=monthString_+" "+__date_[2]+", "+__date_[0]+" "+__time_
+        console.log("date string")
+        console.log(dateString_)
+
+        var myDate__ = new Date(dateString_); // Your timezone!
+        var myEpoch__ = myDate__.getTime();
+
+        var todayEpoch_=new Date().getTime()
+        console.log(todayEpoch_)
+
+
+
+
         sum=sum+1
         console.log("sum")
         console.log(sum)
         if(m.subtype == "drawing" || m.subtype == "literature" || m.subtype == "craft"){
-          var obj_={
-            itemname:m.itemname,
-            time:m.time,
-            date:m.date,
-            duration:m.duration,
+          var durationString=m.duration.split(":")
+          var final_d_string;
+          if(durationString[1] == '00'){
+            final_d_string=durationString[0]+" hour"
+          }else{
+            final_d_string=durationString[0]+" hour "+durationString[1]+" min"
           }
-          items_list.push(obj_)
+          if(myEpoch__>=todayEpoch_){
+            var obj_={
+              itemname:m.itemname,
+              ntime:tConvert(m.time),
+              time:m.time,
+              date:m.date,
+              ndate:(__date_[2]+' '+monthString_+' '+__date_[0]),
+              sduration:final_d_string,
+              duration:m.duration,
+              
+            }
+            items_list.push(obj_)
+          }else{
+            var obj_={
+              itemname:m.itemname,
+              ntime:tConvert(m.time),
+              time:m.time,
+              date:m.date,
+              ndate:(__date_[2]+' '+monthString_+' '+__date_[0]),
+              sduration:final_d_string,
+              duration:m.duration,
+              past:"yes",
+              
+            }
+            items_list.push(obj_)
+          }
+          
+          
           // console.log(items_list)
         }
         if(sum==items.length){
+          console.log(items_list)
           var today = new Date();
           var dd = String(today.getDate()).padStart(2, '0');
           var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
           var yyyy = today.getFullYear();
-          var timeNow=String(today.getHours)+':'+String(today.getMinutes)
+         
           var todayDate = yyyy + '-' + mm + '-' + dd;
           console.log(todayDate)
           var final_list=[]
+
+
+          //test time
+          // console.log(new Date().getTime())
+          // var timesRun = 0;
+          // var interval = setInterval(function(){
+          //     timesRun += 1;
+          //     if(timesRun === 6){
+          //         clearInterval(interval);
+                  
+          //     }
+          //     console.log("its working!!")
+          //     console.log(timesRun)
+          //     //do whatever here..
+          // }, 1000); 
+
+          
+
+
+
+
+
           for(var j=0;j<items_list.length;j++){
-            if(items_list[j].date == todayDate && items_list[j].time == timeNow){
+            var monthString;
+            
+            var __date=items_list[j].date.split("-")
+            var __time=items_list[j].time +':00'
+
+            
+
+            //get month
+            switch (Number(__date[1])) {
+              case 1:
+                monthString = "January";
+                break;
+              case 2:
+                monthString = "February";
+                break;
+              case 3:
+                monthString = "March";
+                break;
+              case 4:
+                monthString = "April";
+                break;
+              case 5:
+                monthString = "May";
+                break;
+              case 6:
+                monthString = "June";
+                break;
+              case 7:
+                monthString = "July";
+                break;
+              case 8:
+                monthString = "August";
+                break;
+              case 9:
+                monthString = "September";
+                break;
+              case 10:
+                monthString = "October";
+                break;
+              case 11:
+                monthString = "November";
+                break;
+              case 12:
+                monthString = "December";
+                break;
+              default:
+                monthString = "Error";
+            }
+            var dateString=monthString+" "+__date[2]+", "+__date[0]+" "+__time
+            console.log("date string")
+            console.log(dateString)
+
+            var myDate = new Date(dateString); // Your timezone!
+            var myEpoch = myDate.getTime();
+
+            console.log(myEpoch)
+            var todayEpoch=new Date().getTime()
+            console.log(todayEpoch)
+
+           
+
+            var end_String=monthString+" "+__date[2]+", "+__date[0]+" "+addTimes(items_list[j].time, items_list[j].duration)+":00"
+            var __myDate = new Date(end_String); // Your timezone!
+            var end_epoch = __myDate.getTime();
+
+            if(todayEpoch >= myEpoch && todayEpoch <= end_epoch){
+              console.log(" epoch is true ")
               var finalObj={
                 itemname:items_list[j].itemname,
                 time:items_list[j].time,
                 date:items_list[j].date,
-                duration:items[j].duration,
+                ntime:items_list[j].ntime,
+                sduration:items_list[j].sduration,
+                duration:items_list[j].duration,
+                time_end:addTimes(items_list[j].time, items_list[j].duration),
+                start_epoch:myEpoch,
+                end_epoch:end_epoch,
               }
               final_list.push(finalObj)
             }
           }
           console.log(items_list)
           console.log("time list")
+          console.log(final_list.length)
           console.log(final_list)
-          res.send({items_list,final_list})
+          if(final_list.length == 0){
+            res.render("entries",{items_list})
+          }else{
+            res.render("entries",{items_list,final_list})
+          }
+          
         }
       })
     }
