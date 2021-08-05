@@ -24,6 +24,10 @@
 
 <head>
 
+  <script src = "http://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src = "http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -161,6 +165,10 @@
           {{#if display}}
           {{#if chestM}}
           <input type="number" class="form-control" name="chessno" id="chessno" value="{{chestM}}" hidden>
+          
+          <center><a href="/get-entries/{{chestM}}" class="btn btn-warning">Show works</a></center><br>
+          <center><a href="/back-home" class="btn btn-warning">Back to Home</a></center><br>
+          
           {{/if}}
           <label for="InputEmail1">Select Item</label>&nbsp;
           <select class="form-select form-select-lg mb-3" name="itemname" aria-label=".form-select-lg example"
@@ -169,6 +177,7 @@
             {{#each final_itemsList}}
             <option value="{{this}}">{{this}}</option>
             {{/each}}
+            
           </select>
           <br>
           <label for="InputEmail1">Select Prize</label>&nbsp;
@@ -192,7 +201,13 @@
     </section>
   </section>
   <!-- Login form creation ends -->
-
+ <script>
+      $(document).ready(function() {
+         function disablePrev() { window.history.forward() }
+         window.onload = disablePrev();
+         window.onpageshow = function(evt) { if (evt.persisted) disableBack() }
+      });
+   </script>
 
 </body>
 

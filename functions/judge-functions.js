@@ -355,6 +355,19 @@ module.exports={
         })
         
     },
+    insertParticipationCertificates:(bufferObj)=>{
+        return new Promise(async (resolve, reject) => {
+             
+            db.get().collection('participation-certificates').insertOne(bufferObj).then((data) => {
+            
+              resolve(data.ops[0].email)
+
+             })
+     
+
+        })
+        
+    },
     getAllWinnerCertificates:()=>{
         return new Promise(async (resolve, reject) => {
             let data = await db.get().collection('winner-certificates').find().toArray()
@@ -367,6 +380,44 @@ module.exports={
                 resolve(response)
                 
             })
+        })
+    },
+    removeAllParticipationCertificates:()=>{
+        return new Promise((resolve,reject)=>{
+            db.get().collection('participation-certificates').deleteMany({}).then((response)=>{
+                resolve(response)
+                
+            })
+        })
+    },
+    insertWorkEntries:(details)=>{
+        return new Promise(async (resolve, reject) => {
+             
+            db.get().collection('work-entries').insertOne(details).then((data) => {
+            
+              resolve(data.ops[0]._id)
+
+             })
+     
+
+        })
+    },
+    
+    // pushUserIdToWorkEntries:(findId,userData)=>{
+    //     return new Promise(async (resolve, reject) => {
+
+    //         db.get().collection('work-entries').updateOne({_id:ObjectId(findId)},{$push:{userData:userData}}).then((data) => {
+
+    //             resolve(data)
+
+    //         })
+    //     })
+    // },
+    getAllEntries:()=>{
+        return new Promise(async(resolve,reject)=>{
+           
+            let Details=await db.get().collection('work-entries').find().toArray()
+            resolve(Details)
         })
     }
 

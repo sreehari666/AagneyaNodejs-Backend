@@ -17,10 +17,10 @@ router.get('/', verifyLoginJudge, function (req, res, next) {
 
   eventFunctions.getAllRegisteredDetails().then((dataList) => {
     var newList = []
-    var itemList = [];
+   
     console.log(dataList)
     for (var i = 0; i < dataList.length; i++) {
-
+      var itemList = [];
       if (Array.isArray(dataList[i].itemname) == false) {
 
         itemList.push(dataList[i].itemname)
@@ -30,6 +30,7 @@ router.get('/', verifyLoginJudge, function (req, res, next) {
       console.log(itemList)
 
       var itemDoneList = []
+      console.log(dataList[i].marks)
       if (dataList[i].marks) {
 
         var markItem = dataList[i].marks;
@@ -37,6 +38,7 @@ router.get('/', verifyLoginJudge, function (req, res, next) {
           itemDoneList.push(markItem[j].itemname)
         }
       }
+
 
 
       if ((itemList.length - itemDoneList.length) == 0) {
@@ -130,10 +132,16 @@ router.get('/event_attended/:chestno/:data', (req, res) => {
   
   console.log(req.params.chestno)
   console.log(req.params.data)
-  console.log(req.params.items)
+ 
   var chestno=req.params.chestno
   judgeFunctions.checkUserChest(req.params.chestno).then((r)=>{
-    var item_list=r.itemname
+    var item_list=[]
+    if(Array.isArray(r.itemname) == true){
+      item_list=r.itemname
+    }else{
+      item_list.push(r.itemname)
+    }
+    console.log("item list ..... ")
     console.log(r)
     res.render('judge/item-select',{item_list,chestno})
   })

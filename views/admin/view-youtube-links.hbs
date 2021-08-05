@@ -47,19 +47,21 @@ a:hover {
 <center><h1>YouTube Links</h1></center>
 <table>
   <tr>
+    <th> </th>
     <th>Youtube Link</th>
     <th>Edit</th>
     <th>Delete</th>
     
     
   </tr>
-  {{#each data}}
+  {{#each dataList}}
   <tr>
+    <td><img src="{{this.thumbnail}}"></td>
     <td>{{this.ytlink}}</td>
-    <td><a href="edit-link/{{this._id}}">
+    <td><a href="/admin/edit-link/{{this._id}}">
     <button class="button" >Edit</button><br><br>
     </a></td>
-    <td><a href="delete-link/{{this._id}}" onclick="return confirm('Do you want to delete {{this.ytlink}}')">
+    <td><a href="/admin/delete-link/{{this._id}}" onclick="return confirm('Do you want to delete {{this.ytlink}}')">
     
     <button class="button" >Delete</button><br><br>
     </a></td>

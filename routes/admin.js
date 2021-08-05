@@ -9,6 +9,7 @@ let pdf = require("html-pdf");
 let path = require("path");
 const fs = require('fs')
 var rimraf = require('rimraf')
+var cors = require('cors')
 
 const Cryptr = require('cryptr');
 const cryptr = new Cryptr('myTotalySecretKey');
@@ -27,6 +28,7 @@ const nodemailer = require('nodemailer'),
   Promise = require('bluebird');
 
 
+router.use(cors())
 
 const verifyLogin = (req, res, next) => {
   if (req.session.adminloggedIn) {
@@ -69,26 +71,26 @@ router.get('/admin-logout', (req, res) => {
 /* GET users listing. */
 router.get('/', verifyLogin, function (req, res, next) {
   eventFunctions.getAllEvents().then((eventDetails) => {
-    eventFunctions.getAllItems().then((items)=>{
+    eventFunctions.getAllItems().then((items) => {
       console.log(eventDetails)
-      var gList=[]
-      for(var i=0;i<items.length;i++){
-        if(items[i].firstPrizeStatus == 1 || items[i].secondPrizeStatus == 1 || items[i].thirdPrizeStatus == 1){
-            gList.push(items[i].itemname)
+      var gList = []
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].firstPrizeStatus == 1 || items[i].secondPrizeStatus == 1 || items[i].thirdPrizeStatus == 1) {
+          gList.push(items[i].itemname)
         }
       }
       console.log(items.length)
       console.log(gList.length)
-      if(items.length == gList.length){
-        var certificateStatus="yes"
-        res.render('admin/admin-panel', { eventDetails,certificateStatus })
-      }else{
-        res.render('admin/admin-panel', { eventDetails})
+      if (items.length == gList.length) {
+        var certificateStatus = "yes"
+        res.render('admin/admin-panel', { eventDetails, certificateStatus })
+      } else {
+        res.render('admin/admin-panel', { eventDetails })
       }
       console.log(items)
-     
+
     })
-    
+
   })
 
 
@@ -298,8 +300,28 @@ router.post('/add-youtube-link', function (req, res) {
 })
 router.get('/view-youtube-links', function (req, res) {
   eventFunctions.getAllLinks().then((data) => {
+    var dataList=[]
+    for(var i=0;i<data.length;i++){
+      console.log(data[i])
+      var video_id = data[i].ytlink.split('v=')[1];
+      var ampersandPosition = video_id.indexOf('&');
+      if(ampersandPosition != -1) {
+        video_id = video_id.substring(0, ampersandPosition);
+      }
+      console.log(video_id)
+      var videoData="https://www.youtube.com/oembed?url="+data[i].ytlink+"&format=json"
+      
+      
+      var obj={
+        _id:data[i]._id,
+        ytlink:data[i].ytlink,
+        thumbnail:"https://img.youtube.com/vi/"+video_id+"/1.jpg",
+
+      }
+      dataList.push(obj)
+    }
     console.log(data)
-    res.render('admin/view-youtube-links', { data })
+    res.render('admin/view-youtube-links', { dataList })
   })
 })
 
@@ -463,12 +485,12 @@ router.get("/generateReport", (req, res) => {
 
   eventFunctions.getAllRegisteredDetails().then((registerDetails_) => {
 
-    
-   
+
+
     var emailList = fs.readdirSync('./certificates')
     console.log("----------------generate report---------------------")
     console.log(emailList)
-    
+
     console.log(registerDetails_)
     var _length = registerDetails_.length
     for (var i = 0; i < _length; i++) {
@@ -491,7 +513,7 @@ router.get("/generateReport", (req, res) => {
 
           }
           final_studentList.push(stdObj)
-          
+
           console.log(final_studentList)
         }
 
@@ -554,7 +576,7 @@ router.get("/generateReport", (req, res) => {
             };
 
             // './certificates/' + email_ + "/" + item_name + chestno_.toString() + '.pdf',
-            pdf.create(data, options).toFile('./certificates/' + email_ + "/" + item_name +"&"+ chestno_.toString() + '.pdf', function (err, data_) {
+            pdf.create(data, options).toFile('./certificates/' + email_ + "/" + item_name + "&" + chestno_.toString() + '.pdf', function (err, data_) {
               if (err) {
                 //res.send(err);
                 console.log(err)
@@ -590,65 +612,77 @@ router.get("/generateReport", (req, res) => {
 })
 router.get('/upload-certificates', (req, res) => {
   // judgeFunctions.removeAllWinnerCertificates()
-  var data = fs.readdirSync('./certificates')
-  console.log(data)
-
   let bufferList = []
-  for (var k = 0; k < data.length; k++) {
-    var tempList = fs.readdirSync('./certificates/' + data[k])
-    for (var m = 0; m < tempList.length; m++) {
+  fs.readdir('./certificates', function (err, data) {
+    console.log(data)
+    console.log(data.length)
+    data.forEach(function (folder) {
+      console.log("folder")
 
-      var fileObj = {
-        email: data[k],
-        filename:tempList[m],
-        buffer: Buffer.from('./certificates/' + data[k] + '/' + tempList[m]),
-      }
-      bufferList.push(fileObj)
-    }
-  }
-  console.log(bufferList)
-  var tempCheckList=[]
-  judgeFunctions.removeAllWinnerCertificates().then((rm)=>{
-    
-    for (var i = 0; i < bufferList.length; i++) {
-      var bufferLength=bufferList.length
-      console.log("buffer length" + bufferLength)
-      
-        judgeFunctions.insertWinnerCertificates(bufferList[i]).then((d) => {
-        
-          console.log(d)
-          tempCheckList.push(d)
-               console.log(fs.readdirSync('./certificates/' + d + '/'))
-               console.log("d len")
-               console.log(tempCheckList.length)
-               console.log(bufferLength)
-               if(tempCheckList.length==bufferLength){
-                res.redirect('/admin/sent-certificates')
-               }
-               
-        })
-      
-      
-    }
+      fs.readdir('./certificates/' + folder, function (err, tempList) {
+        console.log(tempList)
+        for (var i = 0; i < tempList.length; i++) {
+          var fileObj = {
+            email: folder,
+            filename: tempList[i],
+            buffer: Buffer.from('./certificates/' + folder + '/' + tempList[i]),
+          }
+          bufferList.push(fileObj)
+          console.log(bufferList)
+          if (bufferList.length == tempList.length) {
+            console.log("at end")
+            var tempCheckList = []
+            judgeFunctions.removeAllWinnerCertificates().then((rm) => {
+
+              for (var i = 0; i < bufferList.length; i++) {
+                var bufferLength = bufferList.length
+                console.log("buffer length" + bufferLength)
+
+                judgeFunctions.insertWinnerCertificates(bufferList[i]).then((d) => {
+
+                  console.log(d)
+                  tempCheckList.push(d)
+
+                  console.log("d len")
+                  console.log(tempCheckList.length)
+                  console.log(bufferLength)
+                  if (tempCheckList.length == bufferLength) {
+                    res.redirect('/admin/sent-certificates')
+                  }
+
+                })
+
+
+              }
+            })
+          }
+        }
+
+
+      })
+
+
+
+    })
+
   })
-  
-
 
 })
 
 
 router.get('/sent-certificates', (req, res) => {
 
+
   var data = fs.readdirSync('./certificates')
 
-  console.log(data)
 
-  console.log(fs.readdirSync('./certificates/' + data[0]))
+  console.log(data)
 
   let users = []
   for (var i = 0; i < data.length; i++) {
     console.log(data[i])
-    console.log(fs.readdirSync('./certificates/' + data[i]))
+
+
     var tempList = fs.readdirSync('./certificates/' + data[i])
     for (var j = 0; j < tempList.length; j++) {
       console.log("----------")
@@ -702,66 +736,71 @@ router.get('/sent-certificates', (req, res) => {
 
       });
     }));
-  }).then(async(data) => {
+  }).then(async (data) => {
     console.log("----------after sending emails-------------")
     console.log(data.length)
     console.log(data[0])
     console.log('Winner email successfully sent');
-    if(await data){
+    if (await data) {
       res.redirect('/admin/delete-winner-certificate')
     }
-    
+
   });
 
 
 })
-router.get('/delete-winner-certificate',(req,res)=>{
-  // await rimraf("./certificates", function () { 
-  //   console.log("done"); 
-  //   fs.mkdir('./certificates', (err) => {
-  //     if (err) {
-  //         return console.error(err);
-  //     }
-  //     console.log('Directory created successfully!');
-  // });
-  // });
-  
+router.get('/delete-winner-certificate', (req, res) => {
+
+  console.log("call is here to delete")
+  res.redirect("/admin")
+  setTimeout(function () {
+    console.log("I am the third log after 5 seconds");
+    var emails = fs.readdirSync('./certificates')
+    var files;
+    var sum=0
+
+    for (var j = 0; j < emails.length; j++) {
+      console.log(fs.readdirSync('./certificates/' + emails[j] + '/'))
+
+      files = fs.readdirSync('./certificates/' + emails[j] + '/')
+      for (var i = 0; i < files.length; i++) {
+        fs.unlink('./certificates/' + emails[j] + '/' + files[i], function (err) {
+          if (err) {
+            return console.error(err);
+          }
+          console.log('successfully deleted');
+          sum=sum+1
+          if(sum == files.length){
+            console.log("end point")
+            
+          }
+
+        });
+      }
+    }
+  }, 1.2e+6);
 
 
-    // var emails = fs.readdirSync('./certificates')
-    // var files;
-    //   for(var j=0;j<emails.length;j++){
-    //     console.log(fs.readdirSync('./certificates/' + emails[j] + '/'))
- 
-    //     files=fs.readdirSync('./certificates/' + emails[j] + '/')
-    //    for(var i=0;i<files.length;i++){
-    //      fs.unlink('./certificates/' + emails[j] + '/'+files[i], function (err) {
-    //        if (err) {
-    //          return console.error(err);
-    //        }
-    //        console.log('successfully deleted');
-  
-    //      });
-    //    }
-    //   }
+
+
 })
-router.get('/generate-participation-certificates',(req,res)=>{
-  eventFunctions.getAllRegisteredDetails().then((data)=>{
+router.get('/generate-participation-certificates', (req, res) => {
+  eventFunctions.getAllRegisteredDetails().then((data) => {
     console.log(data)
-    var userList=[]
-    for(var i=0;i<data.length;i++){
+    var userList = []
+    for (var i = 0; i < data.length; i++) {
       console.log(data[i].attendedEventStatus)
-      var attended_events=data[i].attendedEvent
-      
-      if(data[i].attendedEventStatus && attended_events && !data[i].marks){
-        
-        var obj={
-          name:data[i].name,
-          email:data[i].email,
-          department:data[i].department,
-          semester:data[i].semester,
-          chestno:data[i].chessno[0],
-          itemname:attended_events[0].join(),
+      var attended_events = data[i].attendedEvent
+
+      if (data[i].attendedEventStatus && attended_events && !data[i].marks) {
+
+        var obj = {
+          name: data[i].name,
+          email: data[i].email,
+          department: data[i].department,
+          semester: data[i].semester,
+          chestno: data[i].chessno[0],
+          itemname: attended_events[0].join(),
         }
         console.log(obj)
         userList.push(obj)
@@ -770,13 +809,13 @@ router.get('/generate-participation-certificates',(req,res)=>{
     }
     console.log(userList)
     var sum_ = 0;
-    for(var j=0;j<userList.length;j++){
+    for (var j = 0; j < userList.length; j++) {
       var name = userList[j].name
-        var department= userList[j].department
-        var semester= userList[j].semester
-        var chestno= userList[j].chestno
-        var itemname= userList[j].itemname
-        var email= userList[j].email
+      var department = userList[j].department
+      var semester = userList[j].semester
+      var chestno = userList[j].chestno
+      var itemname = userList[j].itemname
+      var email = userList[j].email
 
       ejs.renderFile(path.join(__dirname, './pdf-template/', "participation-template.ejs"), {
         name: name,
@@ -807,9 +846,9 @@ router.get('/generate-participation-certificates',(req,res)=>{
           };
 
           // './certificates/' + email_ + "/" + item_name + chestno_.toString() + '.pdf',
-          pdf.create(data, options).toFile('./certificates-participation/' + email + "/" + itemname +"&"+ chestno + '.pdf', function (err, data_) {
+          pdf.create(data, options).toFile('./certificates-participation/' + email + "/" + itemname + "&" + chestno + '.pdf', function (err, data_) {
             if (err) {
-              
+
               console.log(err)
             } else {
               console.log(data_)
@@ -819,7 +858,7 @@ router.get('/generate-participation-certificates',(req,res)=>{
               }
               console.log(sum_)
               if (userList.length == sum_) {
-                res.redirect("/admin/sent-participation-certificates")
+                res.redirect("/admin/upload-participation-certificates")
               }
 
 
@@ -832,80 +871,168 @@ router.get('/generate-participation-certificates',(req,res)=>{
     }
   })
 })
-
-router.get('/sent-participation-certificates',(req,res)=>{
-    console.log("sending emails......")
-
-    var data = fs.readdirSync('./certificates-participation')
-
+router.get('/upload-participation-certificates', (req, res) => {
+  // judgeFunctions.removeAllWinnerCertificates()
+  let bufferList = []
+  fs.readdir('./certificates-participation', function (err, data) {
     console.log(data)
-  
-    let users = []
-    for (var i = 0; i < data.length; i++) {
-      console.log(data[i])
-      console.log(fs.readdirSync('./certificates-participation/' + data[i]))
-      var tempList = fs.readdirSync('./certificates-participation/' + data[i])
-      for (var j = 0; j < tempList.length; j++) {
-       
-        emailObj = {
-          email: data[i],
-          attachment: tempList[j],
+    console.log(data.length)
+    data.forEach(function (folder) {
+      console.log("folder")
+
+      fs.readdir('./certificates-participation/' + folder, function (err, tempList) {
+        console.log(tempList)
+        for (var i = 0; i < tempList.length; i++) {
+          var fileObj = {
+            email: folder,
+            filename: tempList[i],
+            buffer: Buffer.from('./certificates-participation/' + folder + '/' + tempList[i]),
+          }
+          bufferList.push(fileObj)
+          console.log(bufferList)
+          if (bufferList.length == tempList.length) {
+            console.log("at end")
+            var tempCheckList = []
+            judgeFunctions.removeAllParticipationCertificates().then((rm) => {
+
+              for (var i = 0; i < bufferList.length; i++) {
+                var bufferLength = bufferList.length
+                console.log("buffer length" + bufferLength)
+
+                judgeFunctions.insertParticipationCertificates(bufferList[i]).then((d) => {
+
+                  console.log(d)
+                  tempCheckList.push(d)
+
+                  console.log("d len")
+                  console.log(tempCheckList.length)
+                  console.log(bufferLength)
+                  if (tempCheckList.length == bufferLength) {
+                    res.redirect('/admin/sent-participation-certificates')
+                  }
+
+                })
+
+
+              }
+            })
+          }
         }
-        users.push(emailObj)
+
+
+      })
+
+    })
+
+  })
+
+})
+
+router.get('/sent-participation-certificates', (req, res) => {
+
+
+  console.log("sending emails......")
+
+  var data = fs.readdirSync('./certificates-participation')
+
+  console.log(data)
+
+  let users = []
+  for (var i = 0; i < data.length; i++) {
+    console.log(data[i])
+    console.log(fs.readdirSync('./certificates-participation/' + data[i]))
+    var tempList = fs.readdirSync('./certificates-participation/' + data[i])
+    for (var j = 0; j < tempList.length; j++) {
+
+      emailObj = {
+        email: data[i],
+        attachment: tempList[j],
       }
-  
+      users.push(emailObj)
     }
-    console.log(users)
-  
-    function sendEmail(obj) {
-      return transporter.sendMail(obj);
-    }
-  
-    function loadTemplate(templateName, contexts) {
-      let template = new EmailTemplate(path.join(__dirname, 'templates', templateName));
-      return Promise.all(contexts.map((context) => {
-        return new Promise((resolve, reject) => {
-          template.render(context, (err, result) => {
-            if (err) reject(err);
-            else resolve({
-              email: result,
-              context,
-            });
+
+  }
+  console.log(users)
+
+  function sendEmail(obj) {
+    return transporter.sendMail(obj);
+  }
+
+  function loadTemplate(templateName, contexts) {
+    let template = new EmailTemplate(path.join(__dirname, 'templates', templateName));
+    return Promise.all(contexts.map((context) => {
+      return new Promise((resolve, reject) => {
+        template.render(context, (err, result) => {
+          if (err) reject(err);
+          else resolve({
+            email: result,
+            context,
           });
         });
-      }));
+      });
+    }));
+  }
+
+  loadTemplate('certificate-template', users).then((results) => {
+    return Promise.all(results.map((result) => {
+      sendEmail({
+        to: result.context.email,
+        from: 'Team Athene Arts :)',
+        subject: result.email.subject,
+        html: result.email.html,
+        text: result.email.text,
+        attachments: [
+          {
+            filename: result.context.attachment, // <= Here: made sure file name match
+            path: path.join(__dirname, '../certificates-participation/' + result.context.email + '/' + result.context.attachment), // <= Here
+            contentType: 'application/pdf'
+          }
+        ]
+
+      });
+    }));
+  }).then(async (data) => {
+    console.log("----------after sending emails-------------")
+    console.log(data.length)
+    console.log(data[0])
+    console.log('Winner email successfully sent');
+    if (await data) {
+      res.redirect('/admin/delete-participation-certificates')
     }
-  
-    loadTemplate('certificate-template', users).then((results) => {
-      return Promise.all(results.map((result) => {
-        sendEmail({
-          to: result.context.email,
-          from: 'Team Athene Arts :)',
-          subject: result.email.subject,
-          html: result.email.html,
-          text: result.email.text,
-          attachments: [
-            {
-              filename: result.context.attachment, // <= Here: made sure file name match
-              path: path.join(__dirname, '../certificates-participation/' + result.context.email + '/' + result.context.attachment), // <= Here
-              contentType: 'application/pdf'
-            }
-          ]
-  
+
+  });
+
+})
+
+router.get('/delete-participation-certificates',(req,res)=>{
+  res.redirect('/admin')
+
+  setTimeout(function () {
+    console.log("I am the third log after 5 seconds");
+    var emails = fs.readdirSync('./certificates-participation')
+    var files;
+    var sum=0
+
+    for (var j = 0; j < emails.length; j++) {
+      console.log(fs.readdirSync('./certificates-participation/' + emails[j] + '/'))
+
+      files = fs.readdirSync('./certificates-participation/' + emails[j] + '/')
+      for (var i = 0; i < files.length; i++) {
+        fs.unlink('./certificates-participation/' + emails[j] + '/' + files[i], function (err) {
+          if (err) {
+            return console.error(err);
+          }
+          console.log('successfully deleted');
+          sum=sum+1
+          if(sum == files.length){
+            console.log("end point")
+            
+          }
+
         });
-      }));
-    }).then(async(data) => {
-      console.log("----------after sending emails-------------")
-      console.log(data.length)
-      console.log(data[0])
-      console.log('Winner email successfully sent');
-      if(await data){
-        res.redirect('/admin')
       }
-      
-    });
-
-
+    }
+  }, 1.2e+6);
 
 
 

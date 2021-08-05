@@ -47,10 +47,11 @@
         <section class="row justify-content-center">
             <section class="col-12 col-sm-6 col-md-6">
 
-                <form class="form-container" action="/app-upload-entries-post" method="POST">
+                <form class="form-container" action="/app-upload-entries-post" enctype="multipart/form-data" method="POST">
 
                     <center>
                         <h4>Upload Your Work</h4>
+                        <p style="color: #383a3d;">supported file formats ( pdf png jpeg jpg )</p>
                         <hr color="#FFA500">
                     </center>
 
@@ -63,8 +64,11 @@
                             <tr>
                                 <th scope="row">{{this.itemname}} </th>
 
-                                <td>{{this.ntime}} ({{this.sduration}})<input type="file" name="{{this.itemname}}" enctype="multipart/form-data"></td>
-
+                                <td>&nbsp;&nbsp;{{this.ntime}} ({{this.sduration}})<input type="file" name="file" enctype="multipart/form-data"></td>
+                                <input type="text" name="itemname" value="{{this.itemname}}" hidden>
+                                <input type="text" name="time_end" value="{{this.time_end}}" hidden>
+                                <input type="text" name="end_epoch" value="{{this.end_epoch}}" hidden>
+                                <input type="text" name="id" value="{{this.id}}" hidden>
                             </tr>
                             {{/each}}
 
@@ -87,7 +91,7 @@
                                     <tr>
                                         <th scope="row">{{this.itemname}}</th>
 
-                                        <td>{{this.ndate}} {{this.ntime}} ({{this.sduration}})</td>
+                                        <td>&nbsp;&nbsp;{{this.ndate}} {{this.ntime}} ({{this.sduration}})</td>
 
                                     </tr>
                                 {{/if}}
